@@ -1,14 +1,42 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/owner-self-governance/projects/Owner-Self-Governance-App/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>demo</title>
-    <script type="module" crossorigin src="/owner-self-governance/projects/Owner-Self-Governance-App/assets/index-C8dcMekX.js"></script>
-    <link rel="stylesheet" crossorigin href="/owner-self-governance/projects/Owner-Self-Governance-App/assets/index-BGoiwlCx.css">
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>业主自治宝</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 页面容器 -->
+    <div id="app">
+        <!-- 页面视图将通过JS动态加载 -->
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <nav id="bottom-nav" class="bottom-nav" style="display: none;">
+        <a href="#/home" class="nav-item active" data-page="home">
+            <span class="icon">🏠</span>
+            <span class="text">首页</span>
+        </a>
+        <a href="#/law" class="nav-item" data-page="law">
+            <span class="icon">📚</span>
+            <span class="text">法律</span>
+        </a>
+        <a href="#/vote" class="nav-item" data-page="vote">
+            <span class="icon">🗳️</span>
+            <span class="text">表决</span>
+        </a>
+        <a href="#/forum" class="nav-item" data-page="forum">
+            <span class="icon">💬</span>
+            <span class="text">议事</span>
+        </a>
+        <a href="#/profile" class="nav-item" data-page="profile">
+            <span class="icon">👤</span>
+            <span class="text">我的</span>
+        </a>
+    </nav>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
 </html>
