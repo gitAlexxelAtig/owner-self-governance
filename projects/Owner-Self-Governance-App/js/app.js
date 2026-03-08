@@ -32,6 +32,9 @@ const routes = {
     '/profile/verify': 'verifyInfo',
     '/profile/security': 'accountSecurity',
     '/profile/about': 'aboutUs',
+    '/agreement/user': 'userAgreement',
+    '/agreement/privacy': 'privacyPolicy',
+    '/agreement/community': 'communityRules',
     '/contacts': 'contacts',
     '/notifications': 'notifications',
     '/search': 'search',
@@ -1106,14 +1109,14 @@ const pages = {
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('更换手机号功能开发中')">
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showChangePhoneModal()">
                             <div class="list-item-content">
                                 <div class="list-item-title">📱 更换手机号</div>
                                 <div class="list-item-desc">更换账号绑定的手机号码</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('绑定微信功能开发中')">
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showBindWechatModal()">
                             <div class="list-item-content">
                                 <div class="list-item-title">💬 微信绑定</div>
                                 <div class="list-item-desc">已绑定微信，可用于快速登录</div>
@@ -1235,19 +1238,19 @@ const pages = {
                     <!-- 法律协议 -->
                     <div class="card">
                         <h3 class="card-title">📋 法律协议</h3>
-                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('用户协议页面开发中')">
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="navigate('/agreement/user')">
                             <div class="list-item-content">
                                 <div class="list-item-title">用户协议</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('隐私政策页面开发中')">
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="navigate('/agreement/privacy')">
                             <div class="list-item-content">
                                 <div class="list-item-title">隐私政策</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('社区规范页面开发中')">
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="navigate('/agreement/community')">
                             <div class="list-item-content">
                                 <div class="list-item-title">社区规范</div>
                             </div>
@@ -1269,6 +1272,174 @@ const pages = {
                     <div style="text-align: center; padding: 24px; color: #969799; font-size: 12px;">
                         <p>© 2025 业主自治宝 版权所有</p>
                         <p style="margin-top: 4px;">由 社区自治技术团队 开发和维护</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // 用户协议页面
+    userAgreement() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>用户协议</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <h3 class="card-title">一、总则</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>1.1 本协议是您与业主自治宝之间关于使用本平台服务的协议。</p>
+                            <p>1.2 您在使用本平台服务前，应当仔细阅读本协议，并同意遵守本协议所有条款。</p>
+                            <p>1.3 如您不同意本协议，请停止使用本平台服务。</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">二、账号注册与安全</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>2.1 您应当提供真实、准确、完整的个人资料。</p>
+                            <p>2.2 您应当妥善保管账号密码，对账号下的一切行为负责。</p>
+                            <p>2.3 如发现账号被盗或异常，请立即联系我们。</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">三、服务内容与规范</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>3.1 本平台提供业主认证、表决投票、法律查询等服务。</p>
+                            <p>3.2 您承诺不发布违法、违规、虚假、侵权内容。</p>
+                            <p>3.3 您承诺不进行恶意刷票、作弊等行为。</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">四、隐私保护</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>4.1 我们重视您的隐私保护，详见《隐私政策》。</p>
+                            <p>4.2 未经您同意，我们不会向第三方披露您的个人信息。</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">五、免责声明</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>5.1 本平台提供的法律信息仅供参考，不构成法律建议。</p>
+                            <p>5.2 表决结果仅供参考，实际法律效力以法定程序为准。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // 隐私政策页面
+    privacyPolicy() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>隐私政策</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <h3 class="card-title">一、信息收集</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>1.1 我们收集的信息包括：</p>
+                            <p>• 基本信息：昵称、手机号、头像</p>
+                            <p>• 认证信息：真实姓名、房号、身份证（脱敏）</p>
+                            <p>• 设备信息：设备型号、操作系统版本</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">二、信息使用</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>2.1 我们使用您的信息用于：</p>
+                            <p>• 身份验证和业主认证</p>
+                            <p>• 提供表决投票服务</p>
+                            <p>• 向您推送相关通知</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">三、信息共享</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>3.1 我们不会将您的个人信息出售给第三方。</p>
+                            <p>3.2 仅在以下情况下可能共享信息：</p>
+                            <p>• 经您明确同意</p>
+                            <p>• 应法律法规要求</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">四、信息安全</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>4.1 我们采用加密技术保护您的数据安全。</p>
+                            <p>4.2 您的密码经过加密存储，我们不会以明文保存。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // 社区规范页面
+    communityRules() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>社区规范</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <h3 class="card-title">一、总则</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>为维护良好的社区环境，特制定本规范。所有用户在使用本平台时，均应遵守本规范。</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">二、禁止行为</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>2.1 禁止发布违法违规内容</p>
+                            <p>2.2 禁止发布虚假信息、造谣传谣</p>
+                            <p>2.3 禁止人身攻击、侮辱谩骂</p>
+                            <p>2.4 禁止恶意刷票、作弊行为</p>
+                            <p>2.5 禁止发布广告、垃圾信息</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">三、内容规范</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>3.1 发帖应当真实、客观、有价值</p>
+                            <p>3.2 鼓励分享维权经验、法律知识</p>
+                            <p>3.3 理性讨论，尊重不同观点</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">四、违规处理</h3>
+                        <div style="font-size: 14px; line-height: 1.8; color: #323233;">
+                            <p>4.1 违规内容将被删除</p>
+                            <p>4.2 多次违规将被限制发帖</p>
+                            <p>4.3 严重违规将被永久封号</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1904,7 +2075,7 @@ const pages = {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button class="btn btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;" onclick="showToast('呼叫功能开发中')">呼叫</button>
+                                        <button class="btn btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;" onclick="callOwner('${c.phone}')">呼叫</button>
                                     </div>
                                 `).join('')}
                             </div>
@@ -3156,3 +3327,59 @@ window.togglePostLike = togglePostLike;
 window.toggleCommentLike = toggleCommentLike;
 window.submitVoteOption = submitVoteOption;
 window.showVoteOptions = showVoteOptions;
+
+// ========== 账号安全功能 ==========
+
+/**
+ * 显示更换手机号弹窗
+ */
+function showChangePhoneModal() {
+    const newPhone = prompt('请输入新手机号：');
+    if (!newPhone) return;
+    
+    if (!/^1[3-9]\d{9}$/.test(newPhone)) {
+        showToast('手机号格式不正确');
+        return;
+    }
+    
+    // 模拟发送验证码
+    showToast('验证码已发送');
+    
+    setTimeout(() => {
+        const code = prompt('请输入验证码：');
+        if (code === '123456') { // 模拟验证码
+            UserStore.data.phone = newPhone;
+            UserStore.save();
+            showToast('手机号更换成功');
+            render();
+        } else {
+            showToast('验证码错误');
+        }
+    }, 1000);
+}
+
+/**
+ * 显示绑定微信弹窗
+ */
+function showBindWechatModal() {
+    showToast('微信已绑定');
+}
+
+// ========== 业主通讯录功能 ==========
+
+/**
+ * 呼叫业主
+ */
+function callOwner(phone) {
+    // 显示确认弹窗
+    if (confirm(`确定要呼叫 ${phone} 吗？`)) {
+        // 尝试拨打电话
+        window.location.href = `tel:${phone.replace(/\*/g, '0')}`;
+        showToast('正在呼叫...');
+    }
+}
+
+// 暴露新的全局函数
+window.showChangePhoneModal = showChangePhoneModal;
+window.showBindWechatModal = showBindWechatModal;
+window.callOwner = callOwner;
