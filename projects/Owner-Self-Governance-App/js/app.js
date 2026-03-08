@@ -484,6 +484,7 @@ const pages = {
     home() {
         const latestVotes = MockData.votes.slice(0, 2);
         const hotPosts = MockData.posts.slice(0, 2);
+        const unreadCount = MockData.notifications.filter(n => !n.isRead).length;
 
         return `
             <div class="page active">
@@ -497,13 +498,27 @@ const pages = {
                                 <span>有效期至 2027-03-01</span>
                             </div>
                         </div>
-                        <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid rgba(255,255,255,0.5); cursor: pointer;" onclick="navigate('/profile')">
-                            👤
+                        <div style="display: flex; gap: 12px;">
+                            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(255,255,255,0.5); cursor: pointer; position: relative;" onclick="navigate('/notifications')">
+                                🔔
+                                ${unreadCount > 0 ? `<span style="position: absolute; top: -2px; right: -2px; width: 18px; height: 18px; background: #ee0a24; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600;">${unreadCount}</span>` : ''}
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(255,255,255,0.5); cursor: pointer;" onclick="navigate('/profile')">
+                                👤
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="content">
+                    <!-- 搜索栏 -->
+                    <div class="card" style="padding: 12px;" onclick="navigate('/search')">
+                        <div style="display: flex; align-items: center; gap: 8px; background: #f5f5f5; border-radius: 8px; padding: 10px 12px;">
+                            <span style="color: #969799;">🔍</span>
+                            <span style="color: #969799; font-size: 14px;">搜索法律、表决、帖子...</span>
+                        </div>
+                    </div>
+
                     <div class="grid">
                         <div class="grid-item" onclick="navigate('/law')">
                             <div class="grid-icon blue">📚</div>
@@ -570,6 +585,17 @@ const pages = {
                                 </div>
                             </div>
                         `).join('')}
+                    </div>
+
+                    <!-- 数据统计入口 -->
+                    <div class="card" onclick="navigate('/statistics')" style="cursor: pointer; background: linear-gradient(135deg, #1989fa 0%, #39b9fa 100%); color: #fff;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0 0 4px 0; font-size: 16px;">📊 小区数据看板</h3>
+                                <div style="font-size: 13px; opacity: 0.9;">查看小区表决、论坛活跃度统计</div>
+                            </div>
+                            <div style="font-size: 24px;">›</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -699,6 +725,8 @@ const pages = {
 
     // 个人中心
     profile() {
+        const unreadCount = MockData.notifications.filter(n => !n.isRead).length;
+
         return `
             <div class="page active">
                 <div class="header">
@@ -727,19 +755,38 @@ const pages = {
                         <h3 class="card-title">我的服务</h3>
                         <div class="list-item" onclick="navigate('/profile/payments')">
                             <div class="list-item-content">
-                                <div class="list-item-title">缴费记录</div>
+                                <div class="list-item-title">💳 缴费记录</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" onclick="navigate('/notifications')">
+                            <div class="list-item-content" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div class="list-item-title">🔔 消息通知</div>
+                                ${unreadCount > 0 ? `<span style="background: #ee0a24; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px;">${unreadCount}未读</span>` : ''}
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" onclick="navigate('/statistics')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">📊 数据统计</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" onclick="navigate('/search')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">🔍 搜索</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
                         <div class="list-item" onclick="showToast('功能开发中')">
                             <div class="list-item-content">
-                                <div class="list-item-title">我的小区</div>
+                                <div class="list-item-title">🏘️ 我的小区</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
                         <div class="list-item" onclick="showToast('功能开发中')">
                             <div class="list-item-content">
-                                <div class="list-item-title">认证信息</div>
+                                <div class="list-item-title">📝 认证信息</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
@@ -749,13 +796,13 @@ const pages = {
                         <h3 class="card-title">设置</h3>
                         <div class="list-item" onclick="showToast('功能开发中')">
                             <div class="list-item-content">
-                                <div class="list-item-title">账号安全</div>
+                                <div class="list-item-title">🔒 账号安全</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
                         <div class="list-item" onclick="showToast('功能开发中')">
                             <div class="list-item-content">
-                                <div class="list-item-title">关于我们</div>
+                                <div class="list-item-title">ℹ️ 关于我们</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
