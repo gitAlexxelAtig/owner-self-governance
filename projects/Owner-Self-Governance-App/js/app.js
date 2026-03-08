@@ -23,6 +23,10 @@ const routes = {
     '/forum/create': 'forumCreate',
     '/profile': 'profile',
     '/profile/payments': 'payments',
+    '/profile/community': 'myCommunity',
+    '/profile/verify': 'verifyInfo',
+    '/profile/security': 'accountSecurity',
+    '/profile/about': 'aboutUs',
     '/contacts': 'contacts',
     '/notifications': 'notifications',
     '/search': 'search',
@@ -778,29 +782,29 @@ const pages = {
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" onclick="showToast('功能开发中')">
+                        <div class="list-item" onclick="navigate('/profile/community')">
                             <div class="list-item-content">
                                 <div class="list-item-title">🏘️ 我的小区</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" onclick="showToast('功能开发中')">
+                        <div class="list-item" onclick="navigate('/profile/verify')">
                             <div class="list-item-content">
                                 <div class="list-item-title">📝 认证信息</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
                     </div>
-
+                    
                     <div class="card">
                         <h3 class="card-title">设置</h3>
-                        <div class="list-item" onclick="showToast('功能开发中')">
+                        <div class="list-item" onclick="navigate('/profile/security')">
                             <div class="list-item-content">
                                 <div class="list-item-title">🔒 账号安全</div>
                             </div>
                             <div class="list-item-arrow">›</div>
                         </div>
-                        <div class="list-item" onclick="showToast('功能开发中')">
+                        <div class="list-item" onclick="navigate('/profile/about')">
                             <div class="list-item-content">
                                 <div class="list-item-title">ℹ️ 关于我们</div>
                             </div>
@@ -842,6 +846,408 @@ const pages = {
                             </div>
                         </div>
                     `).join('')}
+                </div>
+            </div>
+        `;
+    },
+
+    // 我的小区页面
+    myCommunity() {
+        const community = UserStore.data.currentCommunity || MockData.communities[0];
+        const mockPropertyCompany = {
+            name: '幸福物业服务有限公司',
+            contact: '400-888-1234',
+            address: '幸福路1号物业服务中心',
+            manager: '王经理',
+            serviceHours: '9:00-18:00'
+        };
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>我的小区</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 小区基本信息 -->
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                            <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #1989fa 0%, #39b9fa 100%); display: flex; align-items: center; justify-content: center; font-size: 32px;">🏘️</div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 18px; font-weight: 600;">${community.name}</div>
+                                <div style="font-size: 13px; color: #969799; margin-top: 4px;">${community.address}</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-default" style="width: 100%;" onclick="navigate('/community/select')">🔄 切换小区</button>
+                    </div>
+
+                    <!-- 小区统计数据 -->
+                    <div class="card">
+                        <h3 class="card-title">小区概况</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                            <div style="text-align: center; padding: 16px; background: #f7f8fa; border-radius: 8px;">
+                                <div style="font-size: 28px; font-weight: 600; color: #1989fa;">${community.totalBuildings}</div>
+                                <div style="font-size: 13px; color: #969799; margin-top: 4px;">总楼栋数</div>
+                            </div>
+                            <div style="text-align: center; padding: 16px; background: #f7f8fa; border-radius: 8px;">
+                                <div style="font-size: 28px; font-weight: 600; color: #07c160;">${community.totalUnits}</div>
+                                <div style="font-size: 13px; color: #969799; margin-top: 4px;">总户数</div>
+                            </div>
+                            <div style="text-align: center; padding: 16px; background: #f7f8fa; border-radius: 8px;">
+                                <div style="font-size: 28px; font-weight: 600; color: #ff976a;">${community.verifiedCount}</div>
+                                <div style="font-size: 13px; color: #969799; margin-top: 4px;">已认证人数</div>
+                            </div>
+                            <div style="text-align: center; padding: 16px; background: #f7f8fa; border-radius: 8px;">
+                                <div style="font-size: 28px; font-weight: 600; color: #ee0a24;">${Math.round(community.verifiedCount / community.totalUnits * 100)}%</div>
+                                <div style="font-size: 13px; color: #969799; margin-top: 4px;">认证率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 物业服务公司信息 -->
+                    <div class="card">
+                        <h3 class="card-title">🏢 物业服务公司</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">公司名称</span>
+                            <span style="font-weight: 600;">${mockPropertyCompany.name}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">联系电话</span>
+                            <span style="font-weight: 600; color: #1989fa;" onclick="showToast('拨打客服电话：${mockPropertyCompany.contact}')">${mockPropertyCompany.contact}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">物业地址</span>
+                            <span>${mockPropertyCompany.address}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">物业经理</span>
+                            <span>${mockPropertyCompany.manager}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">服务时间</span>
+                            <span>${mockPropertyCompany.serviceHours}</span>
+                        </div>
+                    </div>
+
+                    <!-- 小区有效期 -->
+                    <div class="card" style="background: linear-gradient(135deg, #07c160 0%, #07c160 100%); color: #fff;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">服务有效期至</div>
+                                <div style="font-size: 20px; font-weight: 600;">2027-03-01</div>
+                            </div>
+                            <div style="font-size: 48px; opacity: 0.3;">✓</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // 认证信息页面
+    verifyInfo() {
+        const isVerified = UserStore.data.ownerStatus === 'verified' || UserStore.data.ownerStatus === 'pending';
+        const status = UserStore.data.ownerStatus || 'unverified';
+        const mockVerifyInfo = {
+            realName: '张三',
+            phone: '138****1234',
+            building: '1栋',
+            roomNumber: '301室',
+            verifyTime: '2025-03-01 14:30:00',
+            verifyMethod: '房产证认证'
+        };
+
+        const statusConfig = {
+            verified: { icon: '✓', color: '#07c160', text: '已认证', desc: '您已完成业主认证，可使用全部功能' },
+            pending: { icon: '⏳', color: '#ff976a', text: '审核中', desc: '您的认证信息正在审核中，请耐心等待' },
+            unverified: { icon: '✗', color: '#969799', text: '未认证', desc: '您尚未完成业主认证，请先进行认证' }
+        };
+
+        const config = statusConfig[status] || statusConfig.unverified;
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>认证信息</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 认证状态卡片 -->
+                    <div class="card" style="text-align: center; padding: 32px 24px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: ${config.color}20; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 40px; color: ${config.color};">
+                            ${config.icon}
+                        </div>
+                        <div style="font-size: 20px; font-weight: 600; color: ${config.color}; margin-bottom: 8px;">${config.text}</div>
+                        <div style="font-size: 14px; color: #969799;">${config.desc}</div>
+                    </div>
+
+                    <!-- 认证信息详情 -->
+                    ${isVerified ? `
+                    <div class="card">
+                        <h3 class="card-title">认证信息</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">真实姓名</span>
+                            <span style="font-weight: 600;">${mockVerifyInfo.realName}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">手机号码</span>
+                            <span>${mockVerifyInfo.phone}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">楼栋房号</span>
+                            <span style="font-weight: 600;">${mockVerifyInfo.building}${mockVerifyInfo.roomNumber}</span>
+                        </div>
+                        ${status === 'verified' ? `
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">认证方式</span>
+                            <span>${mockVerifyInfo.verifyMethod}</span>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <span style="color: #969799;">认证时间</span>
+                            <span>${mockVerifyInfo.verifyTime}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+
+                    <!-- 重新认证按钮 -->
+                    <button class="btn btn-primary" onclick="navigate('/owner/verify')">${isVerified ? '🔄 重新认证' : '📝 去认证'}</button>
+
+                    <!-- 认证说明 -->
+                    <div class="card" style="background: #f7f8fa; border: none;">
+                        <h3 class="card-title">认证说明</h3>
+                        <div style="font-size: 13px; color: #646566; line-height: 1.8;">
+                            <p>• 业主认证需要验证您的房产信息或业主身份</p>
+                            <p>• 支持房产证认证、物业证明、邻居担保三种方式</p>
+                            <p>• 认证审核通常在24小时内完成</p>
+                            <p>• 认证通过后可使用表决、发帖等全部功能</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // 账号安全页面
+    accountSecurity() {
+        const mockUserInfo = {
+            nickname: UserStore.data.nickname || '微信用户9527',
+            phone: '138****1234',
+            hasPassword: true
+        };
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>账号安全</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 账号信息 -->
+                    <div class="card">
+                        <h3 class="card-title">账号信息</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showEditNicknameModal()">
+                            <div class="list-item-content">
+                                <div class="list-item-title">昵称</div>
+                                <div class="list-item-desc">${mockUserInfo.nickname}</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <div class="list-item-content">
+                                <div class="list-item-title">绑定手机</div>
+                                <div class="list-item-desc">${mockUserInfo.phone}</div>
+                            </div>
+                            <span class="tag tag-success" style="font-size: 11px;">已绑定</span>
+                        </div>
+                    </div>
+
+                    <!-- 安全设置 -->
+                    <div class="card">
+                        <h3 class="card-title">安全设置</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showChangePasswordModal()">
+                            <div class="list-item-content">
+                                <div class="list-item-title">🔒 修改密码</div>
+                                <div class="list-item-desc">${mockUserInfo.hasPassword ? '已设置登录密码' : '未设置登录密码'}</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('更换手机号功能开发中')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">📱 更换手机号</div>
+                                <div class="list-item-desc">更换账号绑定的手机号码</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('绑定微信功能开发中')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">💬 微信绑定</div>
+                                <div class="list-item-desc">已绑定微信，可用于快速登录</div>
+                            </div>
+                            <span class="tag tag-success" style="font-size: 11px;">已绑定</span>
+                        </div>
+                    </div>
+
+                    <!-- 账号操作 -->
+                    <div class="card">
+                        <h3 class="card-title">账号操作</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showClearCacheModal()">
+                            <div class="list-item-content">
+                                <div class="list-item-title">🗑️ 清理缓存</div>
+                                <div class="list-item-desc">清理本地缓存数据</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showLogoutModal()">
+                            <div class="list-item-content">
+                                <div class="list-item-title" style="color: #ee0a24;">🚪 退出登录</div>
+                                <div class="list-item-desc">退出当前账号</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showDeleteAccountModal()">
+                            <div class="list-item-content">
+                                <div class="list-item-title" style="color: #ee0a24;">⚠️ 注销账号</div>
+                                <div class="list-item-desc">永久删除账号及所有数据</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                    </div>
+
+                    <!-- 安全提示 -->
+                    <div style="text-align: center; padding: 16px; color: #969799; font-size: 12px;">
+                        账号安全等级：<span style="color: #07c160;">高</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 修改昵称弹窗 -->
+            <div id="editNicknameModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 12px; padding: 24px; width: 80%; max-width: 320px;">
+                    <h3 style="text-align: center; margin-bottom: 16px;">修改昵称</h3>
+                    <input type="text" id="newNickname" class="input" placeholder="请输入新昵称" value="${mockUserInfo.nickname}" maxlength="20" style="margin-bottom: 16px;">
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-default" style="flex: 1;" onclick="closeEditNicknameModal()">取消</button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="saveNickname()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 修改密码弹窗 -->
+            <div id="changePasswordModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 12px; padding: 24px; width: 80%; max-width: 320px;">
+                    <h3 style="text-align: center; margin-bottom: 16px;">修改密码</h3>
+                    <input type="password" id="oldPassword" class="input" placeholder="请输入原密码" style="margin-bottom: 12px;">
+                    <input type="password" id="newPassword" class="input" placeholder="请输入新密码" style="margin-bottom: 12px;">
+                    <input type="password" id="confirmPassword" class="input" placeholder="请确认新密码" style="margin-bottom: 16px;">
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-default" style="flex: 1;" onclick="closeChangePasswordModal()">取消</button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="savePassword()">保存</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // 关于我们页面
+    aboutUs() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>关于我们</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- Logo和版本 -->
+                    <div class="card" style="text-align: center; padding: 40px 24px;">
+                        <div style="width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, #1989fa 0%, #39b9fa 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 48px; box-shadow: 0 4px 16px rgba(25,137,250,0.3);">🏠</div>
+                        <div style="font-size: 22px; font-weight: 600; margin-bottom: 8px;">业主自治宝</div>
+                        <div style="font-size: 14px; color: #969799;">版本 v2.0.0</div>
+                        <div style="margin-top: 8px;">
+                            <span class="tag tag-primary" style="font-size: 11px;">最新版本</span>
+                        </div>
+                    </div>
+
+                    <!-- 联系方式 -->
+                    <div class="card">
+                        <h3 class="card-title">📞 联系我们</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('客服电话：400-888-9999')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">客服热线</div>
+                                <div class="list-item-desc">400-888-9999</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('客服邮箱：support@yezhuzhibao.com')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">客服邮箱</div>
+                                <div class="list-item-desc">support@yezhuzhibao.com</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('工作时间：周一至周五 9:00-18:00')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">工作时间</div>
+                                <div class="list-item-desc">周一至周五 9:00-18:00</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                    </div>
+
+                    <!-- 法律协议 -->
+                    <div class="card">
+                        <h3 class="card-title">📋 法律协议</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('用户协议页面开发中')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">用户协议</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('隐私政策页面开发中')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">隐私政策</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('社区规范页面开发中')">
+                            <div class="list-item-content">
+                                <div class="list-item-title">社区规范</div>
+                            </div>
+                            <div class="list-item-arrow">›</div>
+                        </div>
+                    </div>
+
+                    <!-- 开源声明 -->
+                    <div class="card">
+                        <h3 class="card-title">🌟 开源声明</h3>
+                        <div style="font-size: 13px; color: #646566; line-height: 1.8;">
+                            <p>业主自治宝前端部分代码已开源，欢迎社区贡献。</p>
+                            <p style="margin-top: 8px;">开源协议：MIT License</p>
+                            <p>GitHub：<a href="#" style="color: #1989fa;" onclick="showToast('GitHub链接：github.com/owner-self-governance/app')">github.com/owner-self-governance/app</a></p>
+                        </div>
+                    </div>
+
+                    <!-- 版权信息 -->
+                    <div style="text-align: center; padding: 24px; color: #969799; font-size: 12px;">
+                        <p>© 2025 业主自治宝 版权所有</p>
+                        <p style="margin-top: 4px;">由 社区自治技术团队 开发和维护</p>
+                    </div>
                 </div>
             </div>
         `;
@@ -1562,7 +1968,7 @@ const pages = {
     // TASK-005: 消息通知页面
     notifications() {
         const unreadCount = MockData.notifications.filter(n => !n.isRead).length;
-        
+
         const typeLabels = {
             'system': '系统通知',
             'vote': '表决提醒',
@@ -1718,7 +2124,7 @@ const pages = {
         const endedVotes = MockData.votes.filter(v => v.status === 'ended').length;
         const totalParticipation = MockData.votes.reduce((sum, v) => sum + v.participated, 0);
         const avgParticipation = Math.round(totalParticipation / totalVotes);
-        
+
         const totalPosts = MockData.posts.length;
         const totalViews = MockData.posts.reduce((sum, p) => sum + p.viewCount, 0);
         const totalLikes = MockData.posts.reduce((sum, p) => sum + p.likeCount, 0);
@@ -2080,7 +2486,7 @@ function submitPost() {
     const content = document.getElementById('postContent')?.value.trim();
     const isUrgent = document.getElementById('postUrgent')?.checked || false;
     const isAnonymous = document.getElementById('postAnonymous')?.checked || false;
-    
+
     const selectedType = document.querySelector('#postTypeGroup .tag.active')?.dataset.type || 'discussion';
     const selectedTags = Array.from(document.querySelectorAll('#postTagsGroup .tag.active')).map(t => t.dataset.tag);
 
@@ -2146,18 +2552,18 @@ function filterNotifications(type, el) {
     // 更新标签状态
     document.querySelectorAll('#notificationFilter .tag').forEach(tag => tag.classList.remove('active'));
     el.classList.add('active');
-    
+
     // 筛选消息
     const items = document.querySelectorAll('.notification-item');
     const emptyState = document.getElementById('notificationEmpty');
     let hasVisible = false;
-    
+
     items.forEach(item => {
         const visible = type === 'all' || item.dataset.type === type;
         item.style.display = visible ? 'block' : 'none';
         if (visible) hasVisible = true;
     });
-    
+
     if (emptyState) {
         emptyState.style.display = hasVisible ? 'none' : 'block';
     }
@@ -2168,18 +2574,18 @@ function handleSearch(keyword) {
     const searchHistory = document.getElementById('searchHistory');
     const hotSearch = document.getElementById('hotSearch');
     const searchResults = document.getElementById('searchResults');
-    
+
     if (!keyword.trim()) {
         if (searchHistory) searchHistory.style.display = 'block';
         if (hotSearch) hotSearch.style.display = 'block';
         if (searchResults) searchResults.style.display = 'none';
         return;
     }
-    
+
     if (searchHistory) searchHistory.style.display = 'none';
     if (hotSearch) hotSearch.style.display = 'none';
     if (searchResults) searchResults.style.display = 'block';
-    
+
     doSearch(keyword);
 }
 
@@ -2188,29 +2594,29 @@ function doSearch(keyword) {
     const voteResults = document.getElementById('voteResults');
     const postResults = document.getElementById('postResults');
     const noResults = document.getElementById('noResults');
-    
+
     keyword = keyword.toLowerCase();
-    
+
     // 搜索法律
-    const matchedLaws = MockData.laws.filter(l => 
+    const matchedLaws = MockData.laws.filter(l =>
         l.title.toLowerCase().includes(keyword) ||
         l.content.toLowerCase().includes(keyword) ||
         l.article.toLowerCase().includes(keyword)
     );
-    
+
     // 搜索表决
     const matchedVotes = MockData.votes.filter(v =>
         v.title.toLowerCase().includes(keyword) ||
         v.content.toLowerCase().includes(keyword)
     );
-    
+
     // 搜索帖子
     const matchedPosts = MockData.posts.filter(p =>
         p.title.toLowerCase().includes(keyword) ||
         p.content.toLowerCase().includes(keyword) ||
         p.authorName.toLowerCase().includes(keyword)
     );
-    
+
     // 渲染法律结果
     if (lawResults) {
         if (matchedLaws.length > 0) {
@@ -2232,7 +2638,7 @@ function doSearch(keyword) {
             lawResults.parentElement.style.display = 'none';
         }
     }
-    
+
     // 渲染表决结果
     if (voteResults) {
         if (matchedVotes.length > 0) {
@@ -2254,7 +2660,7 @@ function doSearch(keyword) {
             voteResults.parentElement.style.display = 'none';
         }
     }
-    
+
     // 渲染帖子结果
     if (postResults) {
         if (matchedPosts.length > 0) {
@@ -2280,7 +2686,7 @@ function doSearch(keyword) {
             postResults.parentElement.style.display = 'none';
         }
     }
-    
+
     // 显示无结果
     const totalResults = matchedLaws.length + matchedVotes.length + matchedPosts.length;
     if (noResults) {
@@ -2299,6 +2705,102 @@ function clearSearch() {
 
 function clearSearchHistory() {
     showToast('搜索历史已清空');
+}
+
+// 账号安全页面相关函数
+function showEditNicknameModal() {
+    const modal = document.getElementById('editNicknameModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeEditNicknameModal() {
+    const modal = document.getElementById('editNicknameModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function saveNickname() {
+    const newNickname = document.getElementById('newNickname')?.value.trim();
+    if (!newNickname) {
+        showToast('请输入昵称');
+        return;
+    }
+    if (newNickname.length < 2) {
+        showToast('昵称至少2个字符');
+        return;
+    }
+    if (newNickname.length > 20) {
+        showToast('昵称最多20个字符');
+        return;
+    }
+    UserStore.data.nickname = newNickname;
+    showToast('昵称修改成功');
+    closeEditNicknameModal();
+    setTimeout(() => render(), 300);
+}
+
+function showChangePasswordModal() {
+    const modal = document.getElementById('changePasswordModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeChangePasswordModal() {
+    const modal = document.getElementById('changePasswordModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function savePassword() {
+    const oldPassword = document.getElementById('oldPassword')?.value;
+    const newPassword = document.getElementById('newPassword')?.value;
+    const confirmPassword = document.getElementById('confirmPassword')?.value;
+
+    if (!oldPassword) {
+        showToast('请输入原密码');
+        return;
+    }
+    if (!newPassword) {
+        showToast('请输入新密码');
+        return;
+    }
+    if (newPassword.length < 6) {
+        showToast('新密码至少6位');
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        showToast('两次输入的密码不一致');
+        return;
+    }
+    showToast('密码修改成功');
+    closeChangePasswordModal();
+}
+
+function showClearCacheModal() {
+    if (confirm('确定要清理缓存吗？')) {
+        showToast('缓存已清理');
+    }
+}
+
+function showLogoutModal() {
+    handleLogout();
+}
+
+function showDeleteAccountModal() {
+    if (confirm('⚠️ 警告：注销账号将永久删除您的所有数据，包括认证信息、发帖记录等，此操作不可恢复。\n\n确定要注销账号吗？')) {
+        if (prompt('请输入"确定注销"以确认操作：') === '确定注销') {
+            UserStore.logout();
+            showToast('账号已注销');
+            setTimeout(() => navigate('/'), 500);
+        } else {
+            showToast('取消注销');
+        }
+    }
 }
 
 // 监听hash变化
@@ -2337,3 +2839,14 @@ window.handleSearch = handleSearch;
 window.doSearch = doSearch;
 window.clearSearch = clearSearch;
 window.clearSearchHistory = clearSearchHistory;
+
+// 账号安全页面全局函数
+window.showEditNicknameModal = showEditNicknameModal;
+window.closeEditNicknameModal = closeEditNicknameModal;
+window.saveNickname = saveNickname;
+window.showChangePasswordModal = showChangePasswordModal;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.savePassword = savePassword;
+window.showClearCacheModal = showClearCacheModal;
+window.showLogoutModal = showLogoutModal;
+window.showDeleteAccountModal = showDeleteAccountModal;
