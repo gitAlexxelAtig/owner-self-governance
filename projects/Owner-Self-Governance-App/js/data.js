@@ -143,14 +143,21 @@ const MockData = {
             id: 1,
             authorName: '热心业主',
             title: '关于小区垃圾分类的建议',
-            content: '最近小区垃圾分类执行不到位，建议物业增加分类指导标识，并在早晚高峰安排志愿者引导。',
+            content: '最近小区垃圾分类执行不到位，建议物业增加分类指导标识，并在早晚高峰安排志愿者引导。\n\n目前主要问题：\n1. 分类标识不清晰\n2. 垃圾桶位置不合理\n3. 居民分类意识不强\n\n建议物业尽快整改！',
             type: 'discussion',
             isUrgent: false,
             isTop: false,
             viewCount: 128,
             likeCount: 45,
-            commentCount: 23,
-            createdAt: '2026-03-07 14:30'
+            commentCount: 2,
+            createdAt: '2026-03-07 14:30',
+            images: ['trash1.jpg', 'trash2.jpg'],
+            comments: [
+                { id: 101, authorName: '环保达人', content: '支持！垃圾分类利国利民', createdAt: '2026-03-07 15:00', likeCount: 8, replies: [] },
+                { id: 102, authorName: '物业小王', content: '收到建议，我们会尽快整改', createdAt: '2026-03-07 16:30', likeCount: 12, replies: [
+                    { id: 1021, authorName: '热心业主', content: '期待改进！', createdAt: '2026-03-07 17:00', likeCount: 3 }
+                ]}
+            ]
         },
         {
             id: 2,
@@ -169,14 +176,22 @@ const MockData = {
             id: 3,
             authorName: '法律小助手',
             title: '物业费涨价必须知道的法律知识',
-            content: '最近有业主询问物业费涨价的问题，整理了一些相关法律知识供大家参考。根据《民法典》...',
+            content: '最近有业主询问物业费涨价的问题，整理了一些相关法律知识供大家参考。\n\n根据《民法典》第九百四十四条，业主应当按照约定向物业服务人支付物业费。物业服务人已经按照约定和有关规定提供服务的，业主不得以未接受或者无需接受相关物业服务为由拒绝支付物业费。\n\n但是，物业费涨价必须经过业主大会同意！如果物业擅自涨价，业主有权拒绝支付超出部分。',
             type: 'knowledge',
             isUrgent: false,
             isTop: false,
             viewCount: 234,
             likeCount: 67,
-            commentCount: 34,
-            createdAt: '2026-03-06 16:00'
+            commentCount: 3,
+            createdAt: '2026-03-06 16:00',
+            images: [],
+            comments: [
+                { id: 1, authorName: '业主A', content: '学习了，谢谢分享！', createdAt: '2026-03-06 16:30', likeCount: 5, replies: [] },
+                { id: 2, authorName: '业主B', content: '我们小区也遇到这种情况', createdAt: '2026-03-06 17:00', likeCount: 3, replies: [
+                    { id: 21, authorName: '法律小助手', content: '可以发起表决维权', createdAt: '2026-03-06 17:15', likeCount: 2 }
+                ]},
+                { id: 3, authorName: '业主C', content: '收藏了', createdAt: '2026-03-07 09:00', likeCount: 1, replies: [] }
+            ]
         }
     ],
 

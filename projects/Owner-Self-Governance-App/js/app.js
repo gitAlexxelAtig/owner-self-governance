@@ -29,27 +29,27 @@ const routes = {
 function checkAuth(page) {
     const publicPages = ['landing', 'login'];
     if (publicPages.includes(page)) return true;
-    
+
     if (!UserStore.isLoggedIn()) {
         navigate('/auth/login');
         return false;
     }
-    
+
     if (page !== 'selectCommunity' && !UserStore.hasCommunity()) {
         navigate('/community/select');
         return false;
     }
-    
+
     if (page !== 'ownerVerify' && page !== 'verifyStatus' && !UserStore.isVerified() && UserStore.hasCommunity()) {
         navigate('/owner/verify');
         return false;
     }
-    
+
     if (page !== 'payment' && !UserStore.isPaid() && UserStore.isVerified()) {
         navigate('/payment');
         return false;
     }
-    
+
     return true;
 }
 
@@ -78,7 +78,7 @@ function render() {
     const hash = window.location.hash.slice(1) || '/';
     const app = document.getElementById('app');
     const bottomNav = document.getElementById('bottom-nav');
-    
+
     // 匹配路由
     let page = 'landing';
     for (const [route, pageName] of Object.entries(routes)) {
@@ -93,23 +93,23 @@ function render() {
             break;
         }
     }
-    
+
     // 检查权限
     if (!checkAuth(page)) return;
-    
+
     // 显示/隐藏底部导航
     const needNav = ['home', 'law', 'vote', 'forum', 'profile'].includes(page);
     bottomNav.style.display = needNav ? 'flex' : 'none';
-    
+
     // 更新导航状态
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.toggle('active', item.dataset.page === page);
     });
-    
+
     // 渲染页面
     const pageContent = pages[page] ? pages[page](hash) : pages.landing();
     app.innerHTML = pageContent;
-    
+
     // 绑定事件
     bindEvents();
 }
@@ -130,7 +130,7 @@ const pages = {
                         <div style="text-align: center;"><div style="font-size: 32px; margin-bottom: 4px;">💬</div><div style="font-size: 12px;">业主联络</div></div>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="card">
                         <div class="search-box" style="padding: 0; margin-bottom: 12px;">
@@ -142,7 +142,7 @@ const pages = {
                             <span class="tag tag-primary">最近浏览</span>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">核心功能</h3>
                         <div class="grid">
@@ -168,7 +168,7 @@ const pages = {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">维权指南</h3>
                         <div class="list-item" onclick="showToast('请先登录')">
@@ -186,7 +186,7 @@ const pages = {
                             <div class="list-item-arrow">›</div>
                         </div>
                     </div>
-                    
+
                     <div class="card price-card">
                         <div class="price">1<span class="price-unit">元/年</span></div>
                         <div style="opacity: 0.9; margin-bottom: 16px;">单个小区全年无限次使用全部功能</div>
@@ -198,7 +198,7 @@ const pages = {
                         </div>
                     </div>
                 </div>
-                
+
                 <div style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
                     <button class="btn btn-primary" onclick="navigate('/auth/login')">微信一键登录</button>
                     <p style="text-align: center; font-size: 12px; color: #969799; margin-top: 8px;">登录后即可使用全部功能</p>
@@ -206,7 +206,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 登录页
     login() {
         return `
@@ -218,26 +218,26 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content" style="padding: 40px 24px;">
                     <div style="text-align: center; margin-bottom: 48px;">
                         <div style="font-size: 80px; margin-bottom: 16px;">🏠</div>
                         <h2 style="font-size: 24px; margin-bottom: 8px;">业主自治宝</h2>
                         <p style="color: #969799;">无业委会也能维权</p>
                     </div>
-                    
+
                     <div style="margin-bottom: 48px;">
                         <label style="display: flex; align-items: center; margin-bottom: 24px; font-size: 12px;">
                             <input type="checkbox" id="agreement" style="margin-right: 8px;">
                             我已阅读并同意《用户协议》和《隐私政策》
                         </label>
-                        
+
                         <button class="btn btn-primary" onclick="handleLogin()">
                             <span style="margin-right: 8px;">💬</span> 微信一键登录
                         </button>
                         <p style="text-align: center; font-size: 12px; color: #969799; margin-top: 16px;">微信授权登录，安全可靠</p>
                     </div>
-                    
+
                     <div style="display: flex; justify-content: space-around; color: #969799; font-size: 12px;">
                         <div style="text-align: center;"><div style="font-size: 24px; margin-bottom: 8px;">🛡️</div><div>实名认证</div></div>
                         <div style="text-align: center;"><div style="font-size: 24px; margin-bottom: 8px;">🔒</div><div>隐私保护</div></div>
@@ -247,7 +247,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 选择小区
     selectCommunity() {
         const communitiesHtml = MockData.communities.map(c => `
@@ -261,7 +261,7 @@ const pages = {
                 </div>
             </div>
         `).join('');
-        
+
         return `
             <div class="page active">
                 <div class="header">
@@ -271,15 +271,15 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="search-box" style="background: transparent; padding: 0 0 12px 0;">
                         <input type="text" class="search-input" placeholder="请输入小区名称或地址">
                     </div>
-                    
+
                     <h3 style="font-size: 14px; margin-bottom: 12px; padding-left: 4px;">热门小区</h3>
                     ${communitiesHtml}
-                    
+
                     <div style="text-align: center; margin-top: 32px;">
                         <div style="border-top: 1px solid #ebedf0; margin-bottom: 16px;"></div>
                         <button class="btn btn-default" style="width: auto; padding: 10px 24px;">创建新小区</button>
@@ -288,7 +288,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 业主认证
     ownerVerify() {
         return `
@@ -300,7 +300,7 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="card">
                         <div style="margin-bottom: 16px;">
@@ -311,7 +311,7 @@ const pages = {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">选择认证方式</h3>
                         <div class="checkbox-group">
@@ -338,7 +338,7 @@ const pages = {
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <div class="input-group">
                             <label>真实姓名</label>
@@ -357,14 +357,14 @@ const pages = {
                             <input type="text" class="input" placeholder="如：301室" id="roomNumber">
                         </div>
                     </div>
-                    
+
                     <button class="btn btn-primary" onclick="submitVerify()">提交认证</button>
                     <p style="text-align: center; font-size: 12px; color: #969799; margin-top: 12px;">提交后我们将在24小时内完成审核</p>
                 </div>
             </div>
         `;
     },
-    
+
     // 认证状态
     verifyStatus() {
         const status = UserStore.data.ownerStatus;
@@ -378,14 +378,14 @@ const pages = {
                             <span></span>
                         </div>
                     </div>
-                    
+
                     <div class="content">
                         <div class="status-card">
                             <div class="status-icon success">✓</div>
                             <div class="status-title">认证已通过</div>
                             <div class="status-desc">您已成为认证业主，可以使用全部功能</div>
                         </div>
-                        
+
                         <div class="card">
                             <h3 class="card-title">认证信息</h3>
                             <div class="list-item">
@@ -401,7 +401,7 @@ const pages = {
                                 <span style="color: #969799;">1栋301室</span>
                             </div>
                         </div>
-                        
+
                         <button class="btn btn-primary" onclick="navigate('/payment')">下一步：支付年费</button>
                     </div>
                 </div>
@@ -416,7 +416,7 @@ const pages = {
                             <span></span>
                         </div>
                     </div>
-                    
+
                     <div class="content">
                         <div class="status-card">
                             <div class="status-icon pending">⏳</div>
@@ -424,14 +424,14 @@ const pages = {
                             <div class="status-desc">您的认证信息已提交，预计24小时内完成审核</div>
                             <div style="color: #ff976a; font-size: 14px; margin-top: 8px;">剩余 18 小时 32 分</div>
                         </div>
-                        
+
                         <button class="btn btn-default" onclick="checkStatus()">刷新状态</button>
                     </div>
                 </div>
             `;
         }
     },
-    
+
     // 支付页
     payment() {
         return `
@@ -443,13 +443,13 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="card price-card">
                         <div class="price">1<span class="price-unit">元/年</span></div>
                         <div style="opacity: 0.9;">${UserStore.data.currentCommunity?.name || '幸福家园小区'}</div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">支付方式</h3>
                         <div class="list-item" style="padding-left: 0; padding-right: 0;">
@@ -462,25 +462,25 @@ const pages = {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div style="margin-bottom: 16px;">
                         <label style="display: flex; align-items: center; font-size: 12px;">
                             <input type="checkbox" checked style="margin-right: 8px;">
                             同意 <span style="color: #1989fa;">《服务协议》</span>
                         </label>
                     </div>
-                    
+
                     <button class="btn btn-primary" onclick="handlePay()">确认支付</button>
                 </div>
             </div>
         `;
     },
-    
+
     // 首页
     home() {
         const latestVotes = MockData.votes.slice(0, 2);
         const hotPosts = MockData.posts.slice(0, 2);
-        
+
         return `
             <div class="page active">
                 <div class="header">
@@ -498,7 +498,7 @@ const pages = {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="grid">
                         <div class="grid-item" onclick="navigate('/law')">
@@ -522,7 +522,7 @@ const pages = {
                             <div class="grid-desc">快速联络邻居</div>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3 class="card-title" style="margin: 0;">最新表决</h3>
@@ -542,7 +542,7 @@ const pages = {
                             </div>
                         `).join('')}
                     </div>
-                    
+
                     <div class="card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3 class="card-title" style="margin: 0;">热门讨论</h3>
@@ -571,7 +571,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 法律库
     law() {
         return `
@@ -582,12 +582,12 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="search-box" style="background: transparent; padding: 0 0 12px 0;">
                         <input type="text" class="search-input" placeholder="搜索法律条文、关键词">
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">维权场景</h3>
                         ${MockData.scenarios.map(s => `
@@ -600,7 +600,7 @@ const pages = {
                             </div>
                         `).join('')}
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">常用法条</h3>
                         ${MockData.laws.map(l => `
@@ -620,7 +620,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 表决
     vote() {
         return `
@@ -631,7 +631,7 @@ const pages = {
                         <a href="#/vote/create" class="right-btn">+ 发起表决</a>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     ${MockData.votes.map(v => `
                         <div class="vote-item" onclick="navigate('/vote/detail/${v.id}')">
@@ -655,7 +655,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 论坛
     forum() {
         return `
@@ -666,7 +666,7 @@ const pages = {
                         <a href="#/forum/create" class="right-btn">+ 发布</a>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     ${MockData.posts.map(p => `
                         <div class="post-item" onclick="navigate('/forum/detail/${p.id}')">
@@ -692,7 +692,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 个人中心
     profile() {
         return `
@@ -703,7 +703,7 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="card">
                         <div style="display: flex; align-items: center; gap: 16px;">
@@ -718,7 +718,7 @@ const pages = {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">我的服务</h3>
                         <div class="list-item" onclick="navigate('/profile/payments')">
@@ -740,7 +740,7 @@ const pages = {
                             <div class="list-item-arrow">›</div>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">设置</h3>
                         <div class="list-item" onclick="showToast('功能开发中')">
@@ -756,13 +756,13 @@ const pages = {
                             <div class="list-item-arrow">›</div>
                         </div>
                     </div>
-                    
+
                     <button class="btn btn-default" style="margin-top: 24px;" onclick="handleLogout()">退出登录</button>
                 </div>
             </div>
         `;
     },
-    
+
     // 缴费记录
     payments() {
         return `
@@ -774,7 +774,7 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     ${MockData.payments.map(p => `
                         <div class="card">
@@ -795,7 +795,7 @@ const pages = {
             </div>
         `;
     },
-    
+
     // 法律详情
     lawDetail(hash) {
         const id = parseInt(hash.split('/').pop());
@@ -803,7 +803,7 @@ const pages = {
         if (!law) {
             return `<div class="page active"><div class="content"><div class="card">法条不存在</div></div></div>`;
         }
-        
+
         return `
             <div class="page active">
                 <div class="header">
@@ -813,7 +813,7 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="card">
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
@@ -823,12 +823,12 @@ const pages = {
                         <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">${law.title}</h2>
                         <div style="font-size: 14px; color: #646566; margin-bottom: 8px;">${law.chapter}</div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">法条内容</h3>
                         <div style="font-size: 15px; line-height: 1.8; color: #323233;">${law.content}</div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">适用场景</h3>
                         ${law.scenarios.map(sid => {
@@ -848,7 +848,149 @@ const pages = {
             </div>
         `;
     },
-    
+
+    // 论坛帖子详情
+    forumDetail(hash) {
+        const id = parseInt(hash.split('/').pop());
+        const post = MockData.posts.find(p => p.id === id);
+        if (!post) {
+            return `<div class="page active"><div class="content"><div class="card">帖子不存在</div></div></div>`;
+        }
+
+        // 获取类型标签
+        const typeLabels = { discussion: '讨论', notice: '通知', knowledge: '知识', complaint: '投诉' };
+        const typeLabel = typeLabels[post.type] || '讨论';
+
+        // 渲染评论
+        function renderComment(comment, isReply = false) {
+            return `
+                <div class="${isReply ? 'reply-item' : 'comment-item'}" style="padding: 12px 0; ${!isReply ? 'border-bottom: 1px solid #ebedf0;' : 'padding-left: 44px; margin-top: 8px;'}"
+                    <div style="display: flex; gap: 12px;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1989fa, #39b9fa); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 600; flex-shrink: 0;">
+                            ${comment.authorName.charAt(0)}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; font-size: 14px;">${comment.authorName}</span>
+                                <span style="font-size: 12px; color: #969799;">${comment.createdAt}</span>
+                            </div>
+                            <div style="margin: 8px 0; font-size: 14px; line-height: 1.6; color: #323233;">${comment.content}</div>
+                            <div style="display: flex; gap: 16px; font-size: 13px; color: #969799;">
+                                <span onclick="showToast('点赞成功')" style="cursor: pointer;">👍 ${comment.likeCount}</span>
+                                ${!isReply ? `<span onclick="showToast('回复功能开发中')" style="cursor: pointer;">💬 回复</span>` : ''}
+                            </div>
+                            ${!isReply && comment.replies && comment.replies.length > 0 ? `
+                                <div style="margin-top: 8px; background: #f7f8fa; border-radius: 8px; padding: 8px 12px;">
+                                    ${comment.replies.map(r => renderComment(r, true)).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>帖子详情</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content" style="padding-bottom: 80px;">
+                    <!-- 帖子内容 -->
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #1989fa, #39b9fa); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 600;">
+                                ${post.authorName.charAt(0)}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 15px;">${post.authorName}</div>
+                                <div style="font-size: 12px; color: #969799;">${post.createdAt}</div>
+                            </div>
+                            <div style="margin-left: auto;">
+                                ${post.isTop ? '<span class="tag tag-danger">置顶</span>' : ''}
+                                ${post.isUrgent ? '<span class="tag tag-warning">紧急</span>' : ''}
+                                <span class="tag tag-primary">${typeLabel}</span>
+                            </div>
+                        </div>
+
+                        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; line-height: 1.4;">${post.title}</h2>
+
+                        <div style="font-size: 15px; line-height: 1.8; color: #323233; white-space: pre-wrap; margin-bottom: 16px;">${post.content}</div>
+
+                        ${post.images && post.images.length > 0 ? `
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;">
+                                ${post.images.map(img => `
+                                    <div style="aspect-ratio: 1; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #969799; font-size: 12px;">
+                                        📷 ${img}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        <div style="display: flex; justify-content: space-around; padding-top: 16px; border-top: 1px solid #ebedf0;">
+                            <div style="text-align: center; color: #969799; font-size: 13px; cursor: pointer;" onclick="showToast('浏览统计')">
+                                <div style="font-size: 20px; margin-bottom: 4px;">👁️</div>
+                                ${post.viewCount}
+                            </div>
+                            <div style="text-align: center; color: #969799; font-size: 13px; cursor: pointer;" onclick="showToast('点赞成功')">
+                                <div style="font-size: 20px; margin-bottom: 4px;">👍</div>
+                                ${post.likeCount}
+                            </div>
+                            <div style="text-align: center; color: #969799; font-size: 13px; cursor: pointer;" onclick="showToast('分享成功')">
+                                <div style="font-size: 20px; margin-bottom: 4px;">📤</div>
+                                分享
+                            </div>
+                            <div style="text-align: center; color: #969799; font-size: 13px; cursor: pointer;" onclick="showToast('已举报')">
+                                <div style="font-size: 20px; margin-bottom: 4px;">⚠️</div>
+                                举报
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 评论区 -->
+                    <div class="card">
+                        <h3 class="card-title">评论 (${post.comments ? post.comments.length : 0})</h3>
+                        ${post.comments && post.comments.length > 0 ? `
+                            <div>
+                                ${post.comments.map(c => renderComment(c)).join('')}
+                            </div>
+                        ` : `
+                            <div style="text-align: center; padding: 40px; color: #969799;">
+                                <div style="font-size: 48px; margin-bottom: 12px;">💬</div>
+                                <div>暂无评论，快来抢沙发吧~</div>
+                            </div>
+                        `}
+                    </div>
+
+                    <!-- 相关推荐 -->
+                    <div class="card">
+                        <h3 class="card-title">相关推荐</h3>
+                        ${MockData.posts.filter(p => p.id !== post.id).slice(0, 2).map(p => `
+                            <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="navigate('/forum/detail/${p.id}')">
+                                <div class="list-item-content">
+                                    <div class="list-item-title" style="-webkit-line-clamp: 1;">${p.title}</div>
+                                    <div class="list-item-desc">${p.authorName} · ${p.viewCount}浏览</div>
+                                </div>
+                                <div class="list-item-arrow">›</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- 评论输入框（固定在底部） -->
+                <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #ebedf0; padding: 12px 16px; display: flex; gap: 12px; align-items: center; z-index: 100;">
+                    <input type="text" placeholder="写评论..." style="flex: 1; height: 40px; border: 1px solid #ebedf0; border-radius: 20px; padding: 0 16px; font-size: 14px; outline: none;" id="commentInput">
+                    <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="showToast('评论功能开发中')">发送</button>
+                </div>
+            </div>
+        `;
+    },
+
     // 表决详情
     voteDetail(hash) {
         const id = parseInt(hash.split('/').pop());
@@ -856,13 +998,13 @@ const pages = {
         if (!vote) {
             return `<div class="page active"><div class="content"><div class="card">表决不存在</div></div></div>`;
         }
-        
+
         const supportPercent = Math.round(vote.support / vote.participated * 100) || 0;
         const opposePercent = Math.round(vote.oppose / vote.participated * 100) || 0;
         const abstainPercent = Math.round(vote.abstain / vote.participated * 100) || 0;
         const participationRate = Math.round(vote.participated / 280 * 100);
         const daysLeft = Math.ceil((new Date(vote.endTime) - new Date()) / (1000 * 60 * 60 * 24));
-        
+
         return `
             <div class="page active">
                 <div class="header">
@@ -872,7 +1014,7 @@ const pages = {
                         <span></span>
                     </div>
                 </div>
-                
+
                 <div class="content">
                     <div class="card">
                         <div class="vote-header">
@@ -885,7 +1027,7 @@ const pages = {
                             表决时间：${vote.startTime} 至 ${vote.endTime}
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">参与情况</h3>
                         <div style="margin-bottom: 12px;">
@@ -912,7 +1054,7 @@ const pages = {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3 class="card-title">投票分布</h3>
                         <div style="margin-bottom: 12px;">
@@ -940,7 +1082,7 @@ const pages = {
                             </div>
                         </div>
                     </div>
-                    
+
                     ${vote.status === 'ongoing' ? `
                         <div class="card">
                             <div style="text-align: center; padding: 16px;">
@@ -974,10 +1116,10 @@ const pages = {
             }
             grouped[c.building].push(c);
         });
-        
+
         // 楼栋排序
         const sortedBuildings = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
-        
+
         return `
             <div class="page active">
                 <div class="header">
@@ -1097,10 +1239,10 @@ function handleLogin() {
         showToast('请先同意用户协议和隐私政策');
         return;
     }
-    
+
     UserStore.login({ nickname: '微信用户' + Math.floor(Math.random() * 1000) });
     showToast('登录成功');
-    
+
     setTimeout(() => {
         if (!UserStore.hasCommunity()) {
             navigate('/community/select');
@@ -1139,12 +1281,12 @@ function submitVerify() {
     const phone = document.getElementById('phone')?.value;
     const building = document.getElementById('building')?.value;
     const roomNumber = document.getElementById('roomNumber')?.value;
-    
+
     if (!realName) { showToast('请输入真实姓名'); return; }
     if (!phone) { showToast('请输入手机号'); return; }
     if (!building) { showToast('请输入楼栋号'); return; }
     if (!roomNumber) { showToast('请输入房号'); return; }
-    
+
     UserStore.setOwnerStatus('pending');
     showToast('提交成功，等待审核');
     setTimeout(() => navigate('/owner/status'), 500);
