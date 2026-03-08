@@ -1220,6 +1220,117 @@ const pages = {
         `;
     },
 
+    // 发起帖子
+    forumCreate() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>发布帖子</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content" style="padding-bottom: 100px;">
+                    <!-- 帖子类型 -->
+                    <div class="card">
+                        <h3 class="card-title">帖子类型</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="postTypeGroup">
+                            <span class="tag tag-primary active" onclick="selectPostType(this, 'discussion')" data-type="discussion">💬 讨论</span>
+                            <span class="tag tag-primary" onclick="selectPostType(this, 'suggestion')" data-type="suggestion">💡 建议</span>
+                            <span class="tag tag-primary" onclick="selectPostType(this, 'complaint')" data-type="complaint">⚠️ 投诉</span>
+                            <span class="tag tag-primary" onclick="selectPostType(this, 'knowledge')" data-type="knowledge">📚 知识</span>
+                        </div>
+                    </div>
+
+                    <!-- 帖子标题 -->
+                    <div class="card">
+                        <div class="input-group">
+                            <label>标题 <span style="color: #ee0a24;">*</span></label>
+                            <input type="text" class="input" placeholder="请输入帖子标题" id="postTitle" maxlength="50" oninput="updatePostCharCount('title')">
+                            <div style="text-align: right; font-size: 12px; color: #969799; margin-top: 4px;">
+                                <span id="postTitleCount">0</span>/50
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 帖子内容 -->
+                    <div class="card">
+                        <div class="input-group">
+                            <label>内容 <span style="color: #ee0a24;">*</span></label>
+                            <textarea class="input" style="min-height: 150px; resize: none;" placeholder="请详细描述您的问题、建议或想法..." id="postContent" maxlength="1000" oninput="updatePostCharCount('content')"></textarea>
+                            <div style="text-align: right; font-size: 12px; color: #969799; margin-top: 4px;">
+                                <span id="postContentCount">0</span>/1000
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 标签选择 -->
+                    <div class="card">
+                        <h3 class="card-title">标签（最多3个）</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="postTagsGroup">
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="物业">物业</span>
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="设施">设施</span>
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="安全">安全</span>
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="环境">环境</span>
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="停车">停车</span>
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="噪音">噪音</span>
+                            <span class="tag tag-primary" onclick="togglePostTag(this)" data-tag="其他">其他</span>
+                        </div>
+                    </div>
+
+                    <!-- 图片上传 -->
+                    <div class="card">
+                        <h3 class="card-title">添加图片（最多9张）</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="postImagesContainer">
+                            <div style="aspect-ratio: 1; border: 2px dashed #ddd; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #969799; cursor: pointer;" onclick="showToast('图片上传功能开发中')">
+                                <div style="font-size: 24px; margin-bottom: 4px;">📷</div>
+                                <div style="font-size: 12px;">添加</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 其他设置 -->
+                    <div class="card">
+                        <h3 class="card-title">其他设置</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>🔴 标记为紧急</span>
+                                <span style="font-size: 12px; color: #969799;">(紧急帖子将优先展示)</span>
+                            </div>
+                            <input type="checkbox" id="postUrgent">
+                        </div>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>🥷 匿名发布</span>
+                                <span style="font-size: 12px; color: #969799;">(其他人无法看到您的身份)</span>
+                            </div>
+                            <input type="checkbox" id="postAnonymous">
+                        </div>
+                    </div>
+
+                    <!-- 提示信息 -->
+                    <div class="card" style="background: #fff3e0; border: none;">
+                        <div style="font-size: 13px; color: #ff976a; line-height: 1.6;">
+                            💡 <strong>发帖规范：</strong><br>
+                            1. 请遵守法律法规，文明发言<br>
+                            2. 投诉类帖子建议先与物业沟通<br>
+                            3. 紧急事项请同时联系物业电话<br>
+                            4. 虚假信息将被删除并封号
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部按钮 -->
+                <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #ebedf0; padding: 12px 16px; display: flex; gap: 12px; z-index: 100;">
+                    <button class="btn btn-default" style="flex: 1;" onclick="history.back()">取消</button>
+                    <button class="btn btn-primary" style="flex: 2;" onclick="submitPost()">发布帖子</button>
+                </div>
+            </div>
+        `;
+    },
+
     // 业主通讯录
     contacts() {
         // 按楼栋分组
@@ -1484,6 +1595,75 @@ function submitVote() {
     }
 }
 
+// 帖子相关函数
+function updatePostCharCount(field) {
+    if (field === 'title') {
+        const count = document.getElementById('postTitle')?.value.length || 0;
+        const el = document.getElementById('postTitleCount');
+        if (el) el.textContent = count;
+    } else if (field === 'content') {
+        const count = document.getElementById('postContent')?.value.length || 0;
+        const el = document.getElementById('postContentCount');
+        if (el) el.textContent = count;
+    }
+}
+
+function selectPostType(el, type) {
+    document.querySelectorAll('#postTypeGroup .tag').forEach(tag => {
+        tag.classList.remove('active');
+    });
+    el.classList.add('active');
+}
+
+function togglePostTag(el) {
+    const selectedCount = document.querySelectorAll('#postTagsGroup .tag.active').length;
+    if (el.classList.contains('active')) {
+        el.classList.remove('active');
+    } else if (selectedCount < 3) {
+        el.classList.add('active');
+    } else {
+        showToast('最多选择3个标签');
+    }
+}
+
+function submitPost() {
+    const title = document.getElementById('postTitle')?.value.trim();
+    const content = document.getElementById('postContent')?.value.trim();
+    const isUrgent = document.getElementById('postUrgent')?.checked || false;
+    const isAnonymous = document.getElementById('postAnonymous')?.checked || false;
+    
+    const selectedType = document.querySelector('#postTypeGroup .tag.active')?.dataset.type || 'discussion';
+    const selectedTags = Array.from(document.querySelectorAll('#postTagsGroup .tag.active')).map(t => t.dataset.tag);
+
+    if (!title) { showToast('请输入帖子标题'); return; }
+    if (title.length < 5) { showToast('标题至少5个字'); return; }
+    if (!content) { showToast('请输入帖子内容'); return; }
+    if (content.length < 10) { showToast('内容至少10个字'); return; }
+
+    if (confirm('确认发布帖子？')) {
+        const now = new Date();
+        const newPost = {
+            id: MockData.posts.length + 1,
+            authorName: isAnonymous ? '匿名业主' : (UserStore.data.nickname || '热心业主'),
+            title: title,
+            content: content,
+            type: selectedType,
+            isUrgent: isUrgent,
+            isTop: false,
+            viewCount: 0,
+            likeCount: 0,
+            commentCount: 0,
+            createdAt: now.toISOString().split('T')[0] + ' ' + now.toTimeString().slice(0, 5),
+            images: [],
+            tags: selectedTags,
+            comments: []
+        };
+        MockData.posts.unshift(newPost);
+        showToast('帖子发布成功！');
+        setTimeout(() => navigate('/forum'), 500);
+    }
+}
+
 // 绑定事件
 function bindEvents() {
     // 底部导航点击事件
@@ -1520,3 +1700,7 @@ window.filterByBuilding = filterByBuilding;
 window.updateVoteCharCount = updateVoteCharCount;
 window.selectVoteType = selectVoteType;
 window.submitVote = submitVote;
+window.updatePostCharCount = updatePostCharCount;
+window.selectPostType = selectPostType;
+window.togglePostTag = togglePostTag;
+window.submitPost = submitPost;
