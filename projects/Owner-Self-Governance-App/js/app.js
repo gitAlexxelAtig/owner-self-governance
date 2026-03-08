@@ -21,7 +21,8 @@ const routes = {
     '/forum/detail/:id': 'forumDetail',
     '/forum/create': 'forumCreate',
     '/profile': 'profile',
-    '/profile/payments': 'payments'
+    '/profile/payments': 'payments',
+    '/contacts': 'contacts'
 };
 
 // 路由守卫
@@ -515,7 +516,7 @@ const pages = {
                             <div class="grid-title">议事圈</div>
                             <div class="grid-desc">业主交流讨论</div>
                         </div>
-                        <div class="grid-item" onclick="showToast('功能开发中')">
+                        <div class="grid-item" onclick="navigate('/contacts')">
                             <div class="grid-icon purple">👥</div>
                             <div class="grid-title">业主通讯录</div>
                             <div class="grid-desc">快速联络邻居</div>
@@ -961,8 +962,133 @@ const pages = {
                 </div>
             </div>
         `;
+    },
+
+    // 业主通讯录
+    contacts() {
+        // 按楼栋分组
+        const grouped = {};
+        MockData.contacts.forEach(c => {
+            if (!grouped[c.building]) {
+                grouped[c.building] = [];
+            }
+            grouped[c.building].push(c);
+        });
+        
+        // 楼栋排序
+        const sortedBuildings = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
+        
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>业主通讯录</h1>
+                        <span style="font-size: 13px; color: #1989fa;">${MockData.contacts.length}人</span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 搜索栏 -->
+                    <div class="search-box" style="background: transparent; padding: 0 0 12px 0;">
+                        <input type="text" class="search-input" placeholder="搜索楼栋、房号或姓名" id="contactSearch" oninput="filterContacts(this.value)">
+                    </div>
+
+                    <!-- 筛选标签 -->
+                    <div class="card" style="padding: 12px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="buildingFilter">
+                            <span class="tag tag-primary active" onclick="filterByBuilding('all', this)" data-building="all">全部</span>
+                            ${sortedBuildings.map(b => `<span class="tag tag-primary" onclick="filterByBuilding('${b}', this)" data-building="${b}">${b}栋</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <!-- 业主列表 -->
+                    <div id="contactsList">
+                        ${sortedBuildings.map(building => `
+                            <div class="card building-group" data-building="${building}">
+                                <div style="font-size: 14px; font-weight: 600; color: #1989fa; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ebedf0;">
+                                    ${building}栋 (${grouped[building].length}户)
+                                </div>
+                                ${grouped[building].sort((a, b) => parseInt(a.room) - parseInt(b.room)).map(c => `
+                                    <div class="list-item contact-item" style="padding-left: 0; padding-right: 0;" data-name="${c.name}" data-room="${c.room}" data-building="${c.building}">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #1989fa, #39b9fa); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 600;">
+                                                ${c.name}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 15px;">${c.building}-${c.room} 业主</div>
+                                                <div style="font-size: 13px; color: #969799;">
+                                                    <span style="margin-right: 12px;">📞 ${c.phone}</span>
+                                                    <span class="tag tag-success" style="font-size: 11px;">已认证</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;" onclick="showToast('呼叫功能开发中')">呼叫</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 空状态 -->
+                    <div id="emptyState" class="card" style="display: none; text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
+                        <div style="color: #969799;">未找到匹配的业主</div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 };
+
+// 通讯录筛选功能
+function filterContacts(keyword) {
+    const items = document.querySelectorAll('.contact-item');
+    const groups = document.querySelectorAll('.building-group');
+    const emptyState = document.getElementById('emptyState');
+    let hasVisible = false;
+
+    keyword = keyword.toLowerCase().trim();
+
+    items.forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const room = item.dataset.room;
+        const building = item.dataset.building;
+        const match = name.includes(keyword) || room.includes(keyword) || building.includes(keyword);
+        item.style.display = match ? 'flex' : 'none';
+        if (match) hasVisible = true;
+    });
+
+    // 隐藏空分组
+    groups.forEach(group => {
+        const visibleItems = group.querySelectorAll('.contact-item:not([style*="display: none"])');
+        group.style.display = visibleItems.length > 0 ? 'block' : 'none';
+    });
+
+    emptyState.style.display = hasVisible ? 'none' : 'block';
+}
+
+function filterByBuilding(building, el) {
+    // 更新标签状态
+    document.querySelectorAll('#buildingFilter .tag').forEach(tag => tag.classList.remove('active'));
+    el.classList.add('active');
+
+    const groups = document.querySelectorAll('.building-group');
+    const searchInput = document.getElementById('contactSearch');
+
+    groups.forEach(group => {
+        if (building === 'all') {
+            group.style.display = 'block';
+            // 恢复所有子项
+            group.querySelectorAll('.contact-item').forEach(item => item.style.display = 'flex');
+        } else {
+            group.style.display = group.dataset.building === building ? 'block' : 'none';
+        }
+    });
+
+    // 清空搜索框
+    if (searchInput) searchInput.value = '';
+}
 
 // 事件处理函数
 function handleLogin() {
@@ -1072,3 +1198,5 @@ window.selectVerifyMethod = selectVerifyMethod;
 window.submitVerify = submitVerify;
 window.checkStatus = checkStatus;
 window.handlePay = handlePay;
+window.filterContacts = filterContacts;
+window.filterByBuilding = filterByBuilding;

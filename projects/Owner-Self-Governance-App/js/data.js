@@ -183,6 +183,20 @@ const MockData = {
     // 缴费记录
     payments: [
         { id: 1, orderNo: 'P202403010001', communityName: '幸福家园小区', amount: 1.00, startDate: '2026-03-01', endDate: '2027-03-01', paidAt: '2026-03-01 10:30' }
+    ],
+
+    // 业主通讯录
+    contacts: [
+        { id: 1, name: '张', phone: '138****1234', building: '1', room: '301', verifiedAt: '2026-01-15' },
+        { id: 2, name: '李', phone: '139****5678', building: '1', room: '302', verifiedAt: '2026-01-20' },
+        { id: 3, name: '王', phone: '137****9012', building: '2', room: '101', verifiedAt: '2026-02-01' },
+        { id: 4, name: '刘', phone: '136****3456', building: '2', room: '102', verifiedAt: '2026-02-05' },
+        { id: 5, name: '陈', phone: '135****7890', building: '3', room: '201', verifiedAt: '2026-02-10' },
+        { id: 6, name: '杨', phone: '134****2345', building: '3', room: '202', verifiedAt: '2026-02-12' },
+        { id: 7, name: '赵', phone: '133****6789', building: '1', room: '501', verifiedAt: '2026-02-15' },
+        { id: 8, name: '周', phone: '132****0123', building: '2', room: '601', verifiedAt: '2026-02-18' },
+        { id: 9, name: '吴', phone: '131****4567', building: '4', room: '401', verifiedAt: '2026-02-20' },
+        { id: 10, name: '郑', phone: '130****8901', building: '5', room: '301', verifiedAt: '2026-02-22' }
     ]
 };
 
