@@ -80,14 +80,95 @@ const MockData = {
             title: '物业擅自提高物业费',
             description: '未经业主同意，物业公司单方面提高物业费收费标准',
             solution: '根据《民法典》第九百三十九条，物业服务合同对业主具有法律约束力。未经业主大会同意，物业不得擅自提高物业费。',
-            steps: ['收集物业费调整通知', '查询业主大会表决记录', '向物业发送整改通知', '向住建局投诉', '必要时提起诉讼']
+            steps: [
+                { title: '收集证据', desc: '保存物业费调整通知、缴费记录等', icon: '📄' },
+                { title: '查询表决记录', desc: '向物业或业委会查询业主大会表决记录', icon: '🔍' },
+                { title: '发送整改通知', desc: '以书面形式要求物业恢复原收费标准', icon: '📨' },
+                { title: '向主管部门投诉', desc: '向住建局、市场监管局投诉', icon: '🏛️' },
+                { title: '法律途径', desc: '必要时提起行政诉讼或民事诉讼', icon: '⚖️' }
+            ],
+            materials: [
+                { name: '物业费调整通知书模板', type: 'template', icon: '📋' },
+                { name: '投诉信范本', type: 'template', icon: '📝' },
+                { name: '相关法律条文', type: 'law', icon: '⚖️' }
+            ],
+            relatedLaws: [1, 2]
         },
         {
             id: 2,
             title: '物业侵占公共收益',
             description: '小区广告费、停车费等公共收益未公示、未分配',
             solution: '根据《民法典》第二百八十二条，建设单位、物业服务企业或者其他管理人等利用业主的共有部分产生的收入，在扣除合理成本之后，属于业主共有。',
-            steps: ['收集公共收益证据', '要求物业公示收支明细', '向业主委员会/街道反映', '申请审计', '依法追讨']
+            steps: [
+                { title: '收集证据', desc: '拍照记录小区广告位、停车场等', icon: '📷' },
+                { title: '要求公示', desc: '书面要求物业公示公共收益收支明细', icon: '📋' },
+                { title: '申请审计', desc: '向业委会或街道申请专项审计', icon: '📊' },
+                { title: '协商追讨', desc: '与物业协商追讨应分配收益', icon: '🤝' },
+                { title: '法律维权', desc: '必要时起诉要求返还公共收益', icon: '⚖️' }
+            ],
+            materials: [
+                { name: '公共收益查询函模板', type: 'template', icon: '📋' },
+                { name: '审计申请书', type: 'template', icon: '📝' },
+                { name: '公共收益分配方案', type: 'doc', icon: '📄' }
+            ],
+            relatedLaws: [1]
+        },
+        {
+            id: 3,
+            title: '物业服务质量差',
+            description: '物业未按合同约定提供服务，环境卫生、安保等问题严重',
+            solution: '根据《民法典》第九百四十二条，物业服务人应当按照约定和物业的使用性质，妥善维修、养护、清洁、绿化和经营管理物业服务区域内的业主共有部分。',
+            steps: [
+                { title: '记录问题', desc: '拍照、录像记录物业服务问题', icon: '📷' },
+                { title: '书面投诉', desc: '向物业提交书面整改要求', icon: '📨' },
+                { title: '收集证据', desc: '收集其他业主的投诉和见证', icon: '👥' },
+                { title: '发起表决', desc: '发起满意度调查或解聘物业表决', icon: '🗳️' },
+                { title: '更换物业', desc: '依法选聘新的物业服务企业', icon: '🏢' }
+            ],
+            materials: [
+                { name: '物业服务问题记录表', type: 'template', icon: '📋' },
+                { name: '整改通知书模板', type: 'template', icon: '📝' },
+                { name: '满意度调查表', type: 'doc', icon: '📊' }
+            ],
+            relatedLaws: [1]
+        },
+        {
+            id: 4,
+            title: '公共维修资金被挪用',
+            description: '物业公司或业委会违规使用、挪用公共维修资金',
+            solution: '根据《民法典》第二百八十一条，建筑物及其附属设施的维修资金，属于业主共有。紧急情况下需要维修建筑物及其附属设施的，业主大会或者业主委员会可以依法申请使用建筑物及其附属设施的维修资金。',
+            steps: [
+                { title: '查询账目', desc: '向维修资金管理部门查询使用情况', icon: '🔍' },
+                { title: '核实项目', desc: '实地核实维修项目的真实性', icon: '🏗️' },
+                { title: '收集证据', desc: '收集挪用证据和相关文件', icon: '📁' },
+                { title: '向主管部门举报', desc: '向住建局、房管局举报', icon: '🏛️' },
+                { title: '追究责任', desc: '要求责任人返还资金并承担法律责任', icon: '⚖️' }
+            ],
+            materials: [
+                { name: '维修资金查询申请表', type: 'template', icon: '📋' },
+                { name: '举报信范本', type: 'template', icon: '📝' },
+                { name: '维修资金使用流程图', type: 'doc', icon: '📊' }
+            ],
+            relatedLaws: [1]
+        },
+        {
+            id: 5,
+            title: '停车位被侵占',
+            description: '小区停车位被物业私自出租、出售或改变用途',
+            solution: '根据《民法典》第二百七十五条，建筑区划内，规划用于停放汽车的车位、车库的归属，由当事人通过出售、附赠或者出租等方式约定。占用业主共有的道路或者其他场地用于停放汽车的车位，属于业主共有。',
+            steps: [
+                { title: '确认权属', desc: '核实停车位的规划性质和权属', icon: '📄' },
+                { title: '收集证据', desc: '拍照记录违规使用停车位情况', icon: '📷' },
+                { title: '书面交涉', desc: '要求物业停止侵权行为', icon: '📨' },
+                { title: '发起表决', desc: '就停车位管理发起业主表决', icon: '🗳️' },
+                { title: '法律维权', desc: '必要时提起诉讼维护权益', icon: '⚖️' }
+            ],
+            materials: [
+                { name: '停车位权属查询指南', type: 'doc', icon: '📋' },
+                { name: '维权通知书模板', type: 'template', icon: '📝' },
+                { name: '停车位管理办法范本', type: 'doc', icon: '📄' }
+            ],
+            relatedLaws: [1]
         }
     ],
 
@@ -192,6 +273,67 @@ const MockData = {
                 ]},
                 { id: 3, authorName: '业主C', content: '收藏了', createdAt: '2026-03-07 09:00', likeCount: 1, replies: [] }
             ]
+        }
+    ],
+
+    // 消息通知
+    notifications: [
+        {
+            id: 1,
+            type: 'system',
+            title: '系统维护通知',
+            content: '系统将于今晚22:00-23:00进行例行维护，期间部分功能可能无法使用。',
+            time: '2026-03-08 10:00',
+            isRead: false,
+            icon: '🔧'
+        },
+        {
+            id: 2,
+            type: 'vote',
+            title: '表决提醒',
+            content: '您有一个表决即将截止："关于要求物业整改小区卫生的表决"，请尽快参与投票。',
+            time: '2026-03-07 18:30',
+            isRead: false,
+            icon: '🗳️',
+            link: '/vote/detail/1'
+        },
+        {
+            id: 3,
+            type: 'interaction',
+            title: '帖子被回复',
+            content: '环保达人回复了您的帖子"关于小区垃圾分类的建议"',
+            time: '2026-03-07 15:05',
+            isRead: true,
+            icon: '💬',
+            link: '/forum/detail/1'
+        },
+        {
+            id: 4,
+            type: 'system',
+            title: '认证通过',
+            content: '恭喜！您的业主认证已通过审核，现在可以参与小区表决了。',
+            time: '2026-03-06 09:00',
+            isRead: true,
+            icon: '✅'
+        },
+        {
+            id: 5,
+            type: 'vote',
+            title: '新表决发起',
+            content: '有新表决发起："关于小区停车位管理方案"，快来参与吧！',
+            time: '2026-03-05 14:20',
+            isRead: true,
+            icon: '📢',
+            link: '/vote/detail/3'
+        },
+        {
+            id: 6,
+            type: 'interaction',
+            title: '评论被点赞',
+            content: '您的评论"学习了，谢谢分享！"获得5个赞',
+            time: '2026-03-06 16:35',
+            isRead: true,
+            icon: '👍'
         }
     ],
 

@@ -14,6 +14,7 @@ const routes = {
     '/home': 'home',
     '/law': 'law',
     '/law/detail/:id': 'lawDetail',
+    '/scenario/detail/:id': 'scenarioDetail',
     '/vote': 'vote',
     '/vote/detail/:id': 'voteDetail',
     '/vote/create': 'voteCreate',
@@ -22,7 +23,10 @@ const routes = {
     '/forum/create': 'forumCreate',
     '/profile': 'profile',
     '/profile/payments': 'payments',
-    '/contacts': 'contacts'
+    '/contacts': 'contacts',
+    '/notifications': 'notifications',
+    '/search': 'search',
+    '/statistics': 'statistics'
 };
 
 // 路由守卫
@@ -591,7 +595,7 @@ const pages = {
                     <div class="card">
                         <h3 class="card-title">维权场景</h3>
                         ${MockData.scenarios.map(s => `
-                            <div class="list-item" onclick="showToast('查看详情')">
+                            <div class="list-item" onclick="navigate('/scenario/detail/${s.id}')">
                                 <div class="list-item-content">
                                     <div class="list-item-title">${s.title}</div>
                                     <div class="list-item-desc">${s.description}</div>
@@ -834,7 +838,7 @@ const pages = {
                         ${law.scenarios.map(sid => {
                             const scenario = MockData.scenarios.find(s => s.id === sid);
                             return scenario ? `
-                                <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('场景详情')">
+                                <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="navigate('/scenario/detail/${scenario.id}')">
                                     <div class="list-item-content">
                                         <div class="list-item-title">${scenario.title}</div>
                                         <div class="list-item-desc">${scenario.description}</div>
@@ -1405,6 +1409,404 @@ const pages = {
                 </div>
             </div>
         `;
+    },
+
+    // TASK-004: 维权场景详情页面
+    scenarioDetail(hash) {
+        const id = parseInt(hash.split('/').pop());
+        const scenario = MockData.scenarios.find(s => s.id === id);
+        if (!scenario) {
+            return `<div class="page active"><div class="content"><div class="card">场景不存在</div></div></div>`;
+        }
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>维权场景</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 场景标题和描述 -->
+                    <div class="card">
+                        <div style="font-size: 48px; margin-bottom: 16px;">⚖️</div>
+                        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">${scenario.title}</h2>
+                        <div style="font-size: 14px; color: #646566; line-height: 1.6; margin-bottom: 16px;">
+                            ${scenario.description}
+                        </div>
+                        <div style="background: #e3f2fd; border-radius: 8px; padding: 12px; font-size: 13px; color: #1989fa; line-height: 1.6;">
+                            <strong>💡 法律依据：</strong>${scenario.solution}
+                        </div>
+                    </div>
+
+                    <!-- 解决步骤 -->
+                    <div class="card">
+                        <h3 class="card-title">解决步骤</h3>
+                        <div style="position: relative; padding-left: 24px;">
+                            ${scenario.steps.map((step, index) => `
+                                <div style="position: relative; padding-bottom: 20px; ${index === scenario.steps.length - 1 ? '' : 'border-left: 2px solid #ebedf0;'} margin-left: 11px;">
+                                    <div style="position: absolute; left: -24px; top: 0; width: 24px; height: 24px; background: ${index === 0 ? '#07c160' : index === scenario.steps.length - 1 ? '#ff976a' : '#1989fa'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600;">
+                                        ${index + 1}
+                                    </div>
+                                    <div style="margin-left: 16px;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                            <span style="font-size: 20px;">${step.icon}</span>
+                                            <span style="font-weight: 600; font-size: 15px;">${step.title}</span>
+                                        </div>
+                                        <div style="font-size: 13px; color: #969799;">${step.desc}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- 相关材料 -->
+                    <div class="card">
+                        <h3 class="card-title">相关材料</h3>
+                        ${scenario.materials.map(m => `
+                            <div class="list-item" onclick="showToast('下载${m.name}')" style="padding-left: 0; padding-right: 0; cursor: pointer;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <span style="font-size: 24px;">${m.icon}</span>
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 14px;">${m.name}</div>
+                                        <div style="font-size: 12px; color: #969799;">
+                                            ${m.type === 'template' ? '文档模板' : m.type === 'law' ? '法律条文' : '参考文档'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="color: #1989fa; font-size: 13px;">下载 ›</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 相关法律 -->
+                    <div class="card">
+                        <h3 class="card-title">相关法律条文</h3>
+                        ${scenario.relatedLaws.map(lid => {
+                            const law = MockData.laws.find(l => l.id === lid);
+                            return law ? `
+                                <div class="list-item" onclick="navigate('/law/detail/${law.id}')" style="padding-left: 0; padding-right: 0; cursor: pointer;">
+                                    <div class="list-item-content">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                            <span class="tag tag-primary">${law.category}</span>
+                                            <span class="text-small text-gray">${law.article}</span>
+                                        </div>
+                                        <div class="list-item-desc" style="-webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;">${law.content.substring(0, 60)}...</div>
+                                    </div>
+                                    <div class="list-item-arrow">›</div>
+                                </div>
+                            ` : '';
+                        }).join('')}
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button class="btn btn-default" style="flex: 1;" onclick="navigate('/law')">返回法律库</button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="navigate('/vote/create')">发起表决</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // TASK-005: 消息通知页面
+    notifications() {
+        const unreadCount = MockData.notifications.filter(n => !n.isRead).length;
+        
+        const typeLabels = {
+            'system': '系统通知',
+            'vote': '表决提醒',
+            'interaction': '互动消息'
+        };
+
+        const typeColors = {
+            'system': '#1989fa',
+            'vote': '#07c160',
+            'interaction': '#ff976a'
+        };
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>消息通知 ${unreadCount > 0 ? `<span style="font-size: 14px; color: #ee0a24;">(${unreadCount}未读)</span>` : ''}</h1>
+                        <span style="font-size: 13px; color: #1989fa; cursor: pointer;" onclick="markAllNotificationsRead()">全部已读</span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 消息类型筛选 -->
+                    <div class="card" style="padding: 12px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="notificationFilter">
+                            <span class="tag tag-primary active" onclick="filterNotifications('all', this)" data-type="all">全部</span>
+                            <span class="tag tag-primary" onclick="filterNotifications('system', this)" data-type="system">🔧 系统</span>
+                            <span class="tag tag-primary" onclick="filterNotifications('vote', this)" data-type="vote">🗳️ 表决</span>
+                            <span class="tag tag-primary" onclick="filterNotifications('interaction', this)" data-type="interaction">💬 互动</span>
+                        </div>
+                    </div>
+
+                    <!-- 消息列表 -->
+                    <div id="notificationList">
+                        ${MockData.notifications.map(n => `
+                            <div class="card notification-item" data-type="${n.type}" data-id="${n.id}" style="${!n.isRead ? 'border-left: 3px solid #ee0a24;' : ''}">
+                                <div style="display: flex; gap: 12px;">
+                                    <div style="width: 44px; height: 44px; border-radius: 50%; background: ${typeColors[n.type]}20; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                                        ${n.icon}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <span style="font-weight: 600; font-size: 15px;">${n.title}</span>
+                                                ${!n.isRead ? '<span style="width: 8px; height: 8px; background: #ee0a24; border-radius: 50%;"></span>' : ''}
+                                            </div>
+                                            <span style="font-size: 12px; color: #969799; white-space: nowrap;">${n.time.split(' ')[0]}</span>
+                                        </div>
+                                        <div style="font-size: 13px; color: #646566; line-height: 1.5; margin-bottom: 8px;" onclick="${n.link ? `navigate('${n.link}')` : 'showToast(\'暂无详情\')'}">
+                                            ${n.content}
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-size: 12px; color: ${typeColors[n.type]}; background: ${typeColors[n.type]}10; padding: 2px 8px; border-radius: 4px;">${typeLabels[n.type]}</span>
+                                            ${!n.isRead ? `<span style="font-size: 12px; color: #1989fa; cursor: pointer;" onclick="markNotificationRead(${n.id})">标记已读</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 空状态 -->
+                    <div id="notificationEmpty" class="card" style="display: none; text-align: center; padding: 60px 40px;">
+                        <div style="font-size: 64px; margin-bottom: 16px;">📭</div>
+                        <div style="color: #969799; font-size: 15px;">暂无此类通知</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // TASK-006: 搜索功能页面
+    search() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <div style="flex: 1; margin: 0 12px;">
+                            <div class="search-box" style="background: transparent; padding: 0;">
+                                <input type="text" class="search-input" placeholder="搜索法律、表决、帖子..." id="searchInput" oninput="handleSearch(this.value)" style="background: #f5f5f5;">
+                            </div>
+                        </div>
+                        <span style="font-size: 14px; color: #1989fa; cursor: pointer;" onclick="clearSearch()">取消</span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 搜索历史 -->
+                    <div id="searchHistory" class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 class="card-title" style="margin: 0;">搜索历史</h3>
+                            <span style="font-size: 12px; color: #969799; cursor: pointer;" onclick="clearSearchHistory()">清空</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="tag tag-default" onclick="doSearch('物业费')" style="cursor: pointer;">物业费</span>
+                            <span class="tag tag-default" onclick="doSearch('停车位')" style="cursor: pointer;">停车位</span>
+                            <span class="tag tag-default" onclick="doSearch('维修资金')" style="cursor: pointer;">维修资金</span>
+                            <span class="tag tag-default" onclick="doSearch('垃圾分类')" style="cursor: pointer;">垃圾分类</span>
+                        </div>
+                    </div>
+
+                    <!-- 热门搜索 -->
+                    <div id="hotSearch" class="card">
+                        <h3 class="card-title">热门搜索</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="tag tag-danger" onclick="doSearch('物业收费')" style="cursor: pointer;">🔥 物业收费</span>
+                            <span class="tag tag-warning" onclick="doSearch('公共收益')" style="cursor: pointer;">公共收益</span>
+                            <span class="tag tag-primary" onclick="doSearch('电梯维修')" style="cursor: pointer;">电梯维修</span>
+                            <span class="tag tag-primary" onclick="doSearch('业委会')" style="cursor: pointer;">业委会</span>
+                            <span class="tag tag-primary" onclick="doSearch('停车管理')" style="cursor: pointer;">停车管理</span>
+                        </div>
+                    </div>
+
+                    <!-- 搜索结果 -->
+                    <div id="searchResults" style="display: none;">
+                        <!-- 法律结果 -->
+                        <div class="card">
+                            <h3 class="card-title">📚 相关法律</h3>
+                            <div id="lawResults"></div>
+                        </div>
+
+                        <!-- 表决结果 -->
+                        <div class="card">
+                            <h3 class="card-title">🗳️ 相关表决</h3>
+                            <div id="voteResults"></div>
+                        </div>
+
+                        <!-- 帖子结果 -->
+                        <div class="card">
+                            <h3 class="card-title">💬 相关帖子</h3>
+                            <div id="postResults"></div>
+                        </div>
+
+                        <!-- 无结果 -->
+                        <div id="noResults" class="card" style="display: none; text-align: center; padding: 60px 40px;">
+                            <div style="font-size: 64px; margin-bottom: 16px;">🔍</div>
+                            <div style="color: #969799; font-size: 15px;">未找到相关内容</div>
+                            <div style="color: #969799; font-size: 13px; margin-top: 8px;">换个关键词试试</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // TASK-007: 数据统计页面
+    statistics() {
+        const community = UserStore.data.currentCommunity || MockData.communities[0];
+        const totalVotes = MockData.votes.length;
+        const ongoingVotes = MockData.votes.filter(v => v.status === 'ongoing').length;
+        const endedVotes = MockData.votes.filter(v => v.status === 'ended').length;
+        const totalParticipation = MockData.votes.reduce((sum, v) => sum + v.participated, 0);
+        const avgParticipation = Math.round(totalParticipation / totalVotes);
+        
+        const totalPosts = MockData.posts.length;
+        const totalViews = MockData.posts.reduce((sum, p) => sum + p.viewCount, 0);
+        const totalLikes = MockData.posts.reduce((sum, p) => sum + p.likeCount, 0);
+        const totalComments = MockData.posts.reduce((sum, p) => sum + p.commentCount, 0);
+
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>数据统计</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- 小区概览 -->
+                    <div class="card">
+                        <h3 class="card-title">🏠 小区概览</h3>
+                        <div style="text-align: center; padding: 16px 0; border-bottom: 1px solid #ebedf0; margin-bottom: 16px;">
+                            <div style="font-size: 22px; font-weight: 600; margin-bottom: 4px;">${community.name}</div>
+                            <div style="font-size: 13px; color: #969799;">${community.address}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center;">
+                            <div>
+                                <div style="font-size: 28px; font-weight: 600; color: #1989fa;">${community.totalBuildings}</div>
+                                <div style="font-size: 12px; color: #969799; margin-top: 4px;">楼栋数</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 28px; font-weight: 600; color: #07c160;">${community.totalUnits}</div>
+                                <div style="font-size: 12px; color: #969799; margin-top: 4px;">总户数</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 28px; font-weight: 600; color: #ff976a;">${community.verifiedCount}</div>
+                                <div style="font-size: 12px; color: #969799; margin-top: 4px;">认证业主</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #ebedf0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 13px; color: #646566;">认证率</span>
+                                <span style="font-size: 13px; color: #1989fa; font-weight: 600;">${Math.round(community.verifiedCount / community.totalUnits * 100)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${Math.round(community.verifiedCount / community.totalUnits * 100)}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 表决统计 -->
+                    <div class="card">
+                        <h3 class="card-title">🗳️ 表决统计</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; margin-bottom: 16px;">
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #323233;">${totalVotes}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">总表决数</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #07c160;">${ongoingVotes}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">进行中</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #969799;">${endedVotes}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">已结束</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #1989fa;">${avgParticipation}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">平均参与</div>
+                            </div>
+                        </div>
+                        <div style="background: #f7f8fa; border-radius: 8px; padding: 12px;">
+                            <div style="font-size: 12px; color: #969799; margin-bottom: 8px;">近30天表决趋势</div>
+                            <div style="display: flex; align-items: flex-end; justify-content: space-around; height: 60px; gap: 8px;">
+                                <div style="flex: 1; background: linear-gradient(to top, #1989fa, #39b9fa); border-radius: 4px 4px 0 0; height: 40%; opacity: 0.8;"></div>
+                                <div style="flex: 1; background: linear-gradient(to top, #1989fa, #39b9fa); border-radius: 4px 4px 0 0; height: 60%; opacity: 0.8;"></div>
+                                <div style="flex: 1; background: linear-gradient(to top, #1989fa, #39b9fa); border-radius: 4px 4px 0 0; height: 30%; opacity: 0.8;"></div>
+                                <div style="flex: 1; background: linear-gradient(to top, #07c160, #07c160); border-radius: 4px 4px 0 0; height: 80%; opacity: 0.8;"></div>
+                                <div style="flex: 1; background: linear-gradient(to top, #1989fa, #39b9fa); border-radius: 4px 4px 0 0; height: 50%; opacity: 0.8;"></div>
+                                <div style="flex: 1; background: linear-gradient(to top, #1989fa, #39b9fa); border-radius: 4px 4px 0 0; height: 70%; opacity: 0.8;"></div>
+                                <div style="flex: 1; background: linear-gradient(to top, #1989fa, #39b9fa); border-radius: 4px 4px 0 0; height: 45%; opacity: 0.8;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-around; margin-top: 8px; font-size: 11px; color: #969799;">
+                                <span>2/1</span><span>2/5</span><span>2/10</span><span>2/15</span><span>2/20</span><span>2/25</span><span>3/1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 论坛活跃度 -->
+                    <div class="card">
+                        <h3 class="card-title">💬 论坛活跃度</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center;">
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #323233;">${totalPosts}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">帖子总数</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #1989fa;">${totalViews}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">总浏览</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #ff976a;">${totalLikes}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">总点赞</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #07c160;">${totalComments}</div>
+                                <div style="font-size: 11px; color: #969799; margin-top: 4px;">总评论</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 热门话题 -->
+                    <div class="card">
+                        <h3 class="card-title">🔥 热门话题 TOP5</h3>
+                        ${MockData.posts.slice(0, 5).map((p, index) => `
+                            <div class="list-item" onclick="navigate('/forum/detail/${p.id}')" style="padding-left: 0; padding-right: 0; cursor: pointer;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 24px; height: 24px; background: ${index < 3 ? '#ee0a24' : '#969799'}; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600;">
+                                        ${index + 1}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;">${p.title}</div>
+                                        <div style="font-size: 12px; color: #969799;">${p.viewCount}浏览 · ${p.likeCount}赞 · ${p.commentCount}评论</div>
+                                    </div>
+                                </div>
+                                <div class="list-item-arrow">›</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 数据更新时间 -->
+                    <div style="text-align: center; padding: 16px; color: #969799; font-size: 12px;">
+                        数据更新时间：${new Date().toLocaleString('zh-CN')}
+                    </div>
+                </div>
+            </div>
+        `;
     }
 };
 
@@ -1677,6 +2079,181 @@ function bindEvents() {
     });
 }
 
+// 消息通知相关函数
+function markNotificationRead(id) {
+    const notification = MockData.notifications.find(n => n.id === id);
+    if (notification) {
+        notification.isRead = true;
+        showToast('已标记为已读');
+        render();
+    }
+}
+
+function markAllNotificationsRead() {
+    MockData.notifications.forEach(n => n.isRead = true);
+    showToast('已全部标记为已读');
+    render();
+}
+
+function filterNotifications(type, el) {
+    // 更新标签状态
+    document.querySelectorAll('#notificationFilter .tag').forEach(tag => tag.classList.remove('active'));
+    el.classList.add('active');
+    
+    // 筛选消息
+    const items = document.querySelectorAll('.notification-item');
+    const emptyState = document.getElementById('notificationEmpty');
+    let hasVisible = false;
+    
+    items.forEach(item => {
+        const visible = type === 'all' || item.dataset.type === type;
+        item.style.display = visible ? 'block' : 'none';
+        if (visible) hasVisible = true;
+    });
+    
+    if (emptyState) {
+        emptyState.style.display = hasVisible ? 'none' : 'block';
+    }
+}
+
+// 搜索相关函数
+function handleSearch(keyword) {
+    const searchHistory = document.getElementById('searchHistory');
+    const hotSearch = document.getElementById('hotSearch');
+    const searchResults = document.getElementById('searchResults');
+    
+    if (!keyword.trim()) {
+        if (searchHistory) searchHistory.style.display = 'block';
+        if (hotSearch) hotSearch.style.display = 'block';
+        if (searchResults) searchResults.style.display = 'none';
+        return;
+    }
+    
+    if (searchHistory) searchHistory.style.display = 'none';
+    if (hotSearch) hotSearch.style.display = 'none';
+    if (searchResults) searchResults.style.display = 'block';
+    
+    doSearch(keyword);
+}
+
+function doSearch(keyword) {
+    const lawResults = document.getElementById('lawResults');
+    const voteResults = document.getElementById('voteResults');
+    const postResults = document.getElementById('postResults');
+    const noResults = document.getElementById('noResults');
+    
+    keyword = keyword.toLowerCase();
+    
+    // 搜索法律
+    const matchedLaws = MockData.laws.filter(l => 
+        l.title.toLowerCase().includes(keyword) ||
+        l.content.toLowerCase().includes(keyword) ||
+        l.article.toLowerCase().includes(keyword)
+    );
+    
+    // 搜索表决
+    const matchedVotes = MockData.votes.filter(v =>
+        v.title.toLowerCase().includes(keyword) ||
+        v.content.toLowerCase().includes(keyword)
+    );
+    
+    // 搜索帖子
+    const matchedPosts = MockData.posts.filter(p =>
+        p.title.toLowerCase().includes(keyword) ||
+        p.content.toLowerCase().includes(keyword) ||
+        p.authorName.toLowerCase().includes(keyword)
+    );
+    
+    // 渲染法律结果
+    if (lawResults) {
+        if (matchedLaws.length > 0) {
+            lawResults.innerHTML = matchedLaws.map(l => `
+                <div class="list-item" onclick="navigate('/law/detail/${l.id}')" style="padding-left: 0; padding-right: 0; cursor: pointer;">
+                    <div class="list-item-content">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span class="tag tag-primary">${l.category}</span>
+                            <span class="text-small text-gray">${l.article}</span>
+                        </div>
+                        <div class="list-item-title">${l.title}</div>
+                        <div class="list-item-desc" style="-webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;">${l.content.substring(0, 60)}...</div>
+                    </div>
+                    <div class="list-item-arrow">›</div>
+                </div>
+            `).join('');
+            lawResults.parentElement.style.display = 'block';
+        } else {
+            lawResults.parentElement.style.display = 'none';
+        }
+    }
+    
+    // 渲染表决结果
+    if (voteResults) {
+        if (matchedVotes.length > 0) {
+            voteResults.innerHTML = matchedVotes.map(v => `
+                <div class="vote-item" onclick="navigate('/vote/detail/${v.id}')" style="cursor: pointer;">
+                    <div class="vote-header">
+                        <span class="tag ${v.status === 'ongoing' ? 'tag-primary' : 'tag-default'}">${v.status === 'ongoing' ? '进行中' : '已结束'}</span>
+                        <span class="text-small text-gray">${v.type}</span>
+                    </div>
+                    <div class="vote-title">${v.title}</div>
+                    <div class="vote-stats">
+                        <span>参与 ${v.participated}人</span>
+                        <span>支持 ${v.support}票</span>
+                    </div>
+                </div>
+            `).join('');
+            voteResults.parentElement.style.display = 'block';
+        } else {
+            voteResults.parentElement.style.display = 'none';
+        }
+    }
+    
+    // 渲染帖子结果
+    if (postResults) {
+        if (matchedPosts.length > 0) {
+            postResults.innerHTML = matchedPosts.map(p => `
+                <div class="post-item" onclick="navigate('/forum/detail/${p.id}')" style="cursor: pointer;">
+                    <div class="post-header">
+                        <div class="post-avatar">👤</div>
+                        <div class="post-info">
+                            <div class="post-author">${p.authorName}</div>
+                            <div class="post-time">${p.createdAt}</div>
+                        </div>
+                    </div>
+                    <div class="post-title">${p.title}</div>
+                    <div class="post-content">${p.content.substring(0, 50)}...</div>
+                    <div class="post-footer">
+                        <span>${p.viewCount}浏览</span>
+                        <span>${p.likeCount}赞</span>
+                    </div>
+                </div>
+            `).join('');
+            postResults.parentElement.style.display = 'block';
+        } else {
+            postResults.parentElement.style.display = 'none';
+        }
+    }
+    
+    // 显示无结果
+    const totalResults = matchedLaws.length + matchedVotes.length + matchedPosts.length;
+    if (noResults) {
+        noResults.style.display = totalResults === 0 ? 'block' : 'none';
+    }
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+        handleSearch('');
+    }
+    history.back();
+}
+
+function clearSearchHistory() {
+    showToast('搜索历史已清空');
+}
+
 // 监听hash变化
 window.addEventListener('hashchange', render);
 
@@ -1704,3 +2281,12 @@ window.updatePostCharCount = updatePostCharCount;
 window.selectPostType = selectPostType;
 window.togglePostTag = togglePostTag;
 window.submitPost = submitPost;
+
+// 新添加的全局函数
+window.markNotificationRead = markNotificationRead;
+window.markAllNotificationsRead = markAllNotificationsRead;
+window.filterNotifications = filterNotifications;
+window.handleSearch = handleSearch;
+window.doSearch = doSearch;
+window.clearSearch = clearSearch;
+window.clearSearchHistory = clearSearchHistory;
