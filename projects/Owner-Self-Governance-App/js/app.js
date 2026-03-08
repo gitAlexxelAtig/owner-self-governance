@@ -1106,6 +1106,120 @@ const pages = {
         `;
     },
 
+    // 发起表决
+    voteCreate() {
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>发起表决</h1>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="content" style="padding-bottom: 100px;">
+                    <!-- 表决标题 -->
+                    <div class="card">
+                        <div class="input-group">
+                            <label>表决标题 <span style="color: #ee0a24;">*</span></label>
+                            <input type="text" class="input" placeholder="请输入表决标题，如：关于选聘新物业公司的表决" id="voteTitle" maxlength="50" oninput="updateVoteCharCount('title')">
+                            <div style="text-align: right; font-size: 12px; color: #969799; margin-top: 4px;">
+                                <span id="titleCount">0</span>/50
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 表决内容 -->
+                    <div class="card">
+                        <div class="input-group">
+                            <label>表决内容 <span style="color: #ee0a24;">*</span></label>
+                            <textarea class="input" style="min-height: 120px; resize: none;" placeholder="请详细描述表决事项的背景、原因和具体内容..." id="voteContent" maxlength="500" oninput="updateVoteCharCount('content')"></textarea>
+                            <div style="text-align: right; font-size: 12px; color: #969799; margin-top: 4px;">
+                                <span id="contentCount">0</span>/500
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 表决类型 -->
+                    <div class="card">
+                        <h3 class="card-title">表决类型</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item active" onclick="selectVoteType(this, 'normal')">
+                                <div class="checkbox-radio"></div>
+                                <div>
+                                    <div style="font-weight: 600;">普通表决</div>
+                                    <div style="font-size: 12px; color: #969799;">一般事项，需1/2参与率</div>
+                                </div>
+                            </label>
+                            <label class="checkbox-item" onclick="selectVoteType(this, 'major')">
+                                <div class="checkbox-radio"></div>
+                                <div>
+                                    <div style="font-weight: 600;">重大事项</div>
+                                    <div style="font-size: 12px; color: #969799;">选聘物业、维修资金等，需2/3参与率</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 截止时间 -->
+                    <div class="card">
+                        <div class="input-group">
+                            <label>截止时间 <span style="color: #ee0a24;">*</span></label>
+                            <input type="datetime-local" class="input" id="voteEndTime">
+                            <div style="font-size: 12px; color: #969799; margin-top: 4px;">
+                                建议设置7-15天，让业主有充足时间参与
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选项设置 -->
+                    <div class="card">
+                        <h3 class="card-title">投票选项</h3>
+                        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                            <div style="flex: 1; padding: 12px; background: #e8f5e9; border-radius: 8px; text-align: center; color: #07c160; font-weight: 600;">支持</div>
+                            <div style="flex: 1; padding: 12px; background: #ffebee; border-radius: 8px; text-align: center; color: #ee0a24; font-weight: 600;">反对</div>
+                            <div style="flex: 1; padding: 12px; background: #fff3e0; border-radius: 8px; text-align: center; color: #ff976a; font-weight: 600;">弃权</div>
+                        </div>
+                        <div style="font-size: 12px; color: #969799;">默认三选项，暂不支持自定义</div>
+                    </div>
+
+                    <!-- 其他设置 -->
+                    <div class="card">
+                        <h3 class="card-title">其他设置</h3>
+                        <div class="list-item" style="padding-left: 0; padding-right: 0;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>匿名表决</span>
+                                <span style="font-size: 12px; color: #969799;">(投票人身份仅管理员可见)</span>
+                            </div>
+                            <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 28px;">
+                                <input type="checkbox" id="voteAnonymous" style="opacity: 0; width: 0; height: 0;">
+                                <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 28px; transition: .3s;"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 提示信息 -->
+                    <div class="card" style="background: #e3f2fd; border: none;">
+                        <div style="font-size: 13px; color: #1989fa; line-height: 1.6;">
+                            💡 <strong>提示：</strong><br>
+                            1. 表决发起后不可修改内容<br>
+                            2. 普通表决需超过50%参与率才有效<br>
+                            3. 重大事项需超过2/3参与率才有效<br>
+                            4. 每人每天最多发起3个表决
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部按钮 -->
+                <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #ebedf0; padding: 12px 16px; display: flex; gap: 12px; z-index: 100;">
+                    <button class="btn btn-default" style="flex: 1;" onclick="history.back()">取消</button>
+                    <button class="btn btn-primary" style="flex: 2;" onclick="submitVote()">提交表决</button>
+                </div>
+            </div>
+        `;
+    },
+
     // 业主通讯录
     contacts() {
         // 按楼栋分组
@@ -1309,6 +1423,67 @@ function handlePay() {
     }
 }
 
+// 表决相关函数
+function updateVoteCharCount(field) {
+    if (field === 'title') {
+        const count = document.getElementById('voteTitle')?.value.length || 0;
+        const el = document.getElementById('titleCount');
+        if (el) el.textContent = count;
+    } else if (field === 'content') {
+        const count = document.getElementById('voteContent')?.value.length || 0;
+        const el = document.getElementById('contentCount');
+        if (el) el.textContent = count;
+    }
+}
+
+function selectVoteType(el, type) {
+    document.querySelectorAll('.checkbox-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    el.classList.add('active');
+}
+
+function submitVote() {
+    const title = document.getElementById('voteTitle')?.value.trim();
+    const content = document.getElementById('voteContent')?.value.trim();
+    const endTime = document.getElementById('voteEndTime')?.value;
+    const isAnonymous = document.getElementById('voteAnonymous')?.checked || false;
+
+    if (!title) { showToast('请输入表决标题'); return; }
+    if (title.length < 5) { showToast('标题至少5个字'); return; }
+    if (!content) { showToast('请输入表决内容'); return; }
+    if (content.length < 20) { showToast('内容至少20个字'); return; }
+    if (!endTime) { showToast('请选择截止时间'); return; }
+
+    const endDate = new Date(endTime);
+    const now = new Date();
+    if (endDate <= now) { showToast('截止时间必须大于当前时间'); return; }
+
+    const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+    if (daysLeft > 30) { showToast('截止时间不能超过30天'); return; }
+
+    if (confirm(`确认提交表决？\n\n标题：${title}\n截止：${endTime}\n匿名：${isAnonymous ? '是' : '否'}`)) {
+        // 添加到模拟数据
+        const newVote = {
+            id: MockData.votes.length + 1,
+            title: title,
+            content: content,
+            type: document.querySelector('.checkbox-item.active')?.textContent.includes('重大') ? '重大事项' : '普通表决',
+            status: 'ongoing',
+            startTime: now.toISOString().split('T')[0],
+            endTime: endTime.split('T')[0],
+            viewCount: 0,
+            participated: 0,
+            support: 0,
+            oppose: 0,
+            abstain: 0
+        };
+        MockData.votes.unshift(newVote);
+        showToast('表决发起成功！');
+        setTimeout(() => navigate('/vote'), 500);
+    }
+}
+
 // 绑定事件
 function bindEvents() {
     // 底部导航点击事件
@@ -1342,3 +1517,6 @@ window.checkStatus = checkStatus;
 window.handlePay = handlePay;
 window.filterContacts = filterContacts;
 window.filterByBuilding = filterByBuilding;
+window.updateVoteCharCount = updateVoteCharCount;
+window.selectVoteType = selectVoteType;
+window.submitVote = submitVote;
