@@ -267,11 +267,11 @@ const MockData = {
             createdAt: '2026-03-06 16:00',
             images: [],
             comments: [
-                { id: 1, authorName: '业主A', content: '学习了，谢谢分享！', createdAt: '2026-03-06 16:30', likeCount: 5, replies: [] },
-                { id: 2, authorName: '业主B', content: '我们小区也遇到这种情况', createdAt: '2026-03-06 17:00', likeCount: 3, replies: [
-                    { id: 21, authorName: '法律小助手', content: '可以发起表决维权', createdAt: '2026-03-06 17:15', likeCount: 2 }
+                { id: 101, authorName: '业主A', content: '学习了，谢谢分享！', createdAt: '2026-03-06 16:30', likeCount: 5, replies: [] },
+                { id: 102, authorName: '业主B', content: '我们小区也遇到这种情况', createdAt: '2026-03-06 17:00', likeCount: 3, replies: [
+                    { id: 1021, authorName: '法律小助手', content: '可以发起表决维权', createdAt: '2026-03-06 17:15', likeCount: 2 }
                 ]},
-                { id: 3, authorName: '业主C', content: '收藏了', createdAt: '2026-03-07 09:00', likeCount: 1, replies: [] }
+                { id: 103, authorName: '业主C', content: '收藏了', createdAt: '2026-03-07 09:00', likeCount: 1, replies: [] }
             ]
         }
     ],
