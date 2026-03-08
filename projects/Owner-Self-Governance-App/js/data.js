@@ -357,6 +357,82 @@ const MockData = {
     ]
 };
 
+// 点赞和投票数据存储
+const InteractionStore = {
+    // 获取点赞的帖子ID数组
+    getLikedPosts() {
+        const saved = localStorage.getItem('owner_app_liked_posts');
+        return saved ? JSON.parse(saved) : [];
+    },
+    
+    // 获取点赞的评论ID数组
+    getLikedComments() {
+        const saved = localStorage.getItem('owner_app_liked_comments');
+        return saved ? JSON.parse(saved) : [];
+    },
+    
+    // 获取投票记录 {voteId: 'support'/'oppose'/'abstain'}
+    getVotedVotes() {
+        const saved = localStorage.getItem('owner_app_voted_votes');
+        return saved ? JSON.parse(saved) : {};
+    },
+    
+    // 切换帖子点赞状态
+    togglePostLike(postId) {
+        const likedPosts = this.getLikedPosts();
+        const index = likedPosts.indexOf(postId);
+        if (index > -1) {
+            likedPosts.splice(index, 1);
+        } else {
+            likedPosts.push(postId);
+        }
+        localStorage.setItem('owner_app_liked_posts', JSON.stringify(likedPosts));
+        return index === -1; // 返回true表示已点赞，false表示取消点赞
+    },
+    
+    // 切换评论点赞状态
+    toggleCommentLike(commentId) {
+        const likedComments = this.getLikedComments();
+        const index = likedComments.indexOf(commentId);
+        if (index > -1) {
+            likedComments.splice(index, 1);
+        } else {
+            likedComments.push(commentId);
+        }
+        localStorage.setItem('owner_app_liked_comments', JSON.stringify(likedComments));
+        return index === -1; // 返回true表示已点赞，false表示取消点赞
+    },
+    
+    // 检查帖子是否已点赞
+    isPostLiked(postId) {
+        return this.getLikedPosts().includes(postId);
+    },
+    
+    // 检查评论是否已点赞
+    isCommentLiked(commentId) {
+        return this.getLikedComments().includes(commentId);
+    },
+    
+    // 提交投票
+    submitVote(voteId, option) {
+        const votedVotes = this.getVotedVotes();
+        const prevOption = votedVotes[voteId];
+        votedVotes[voteId] = option;
+        localStorage.setItem('owner_app_voted_votes', JSON.stringify(votedVotes));
+        return prevOption; // 返回之前的投票选项，用于数据调整
+    },
+    
+    // 获取投票选项
+    getVoteOption(voteId) {
+        return this.getVotedVotes()[voteId];
+    },
+    
+    // 检查是否已投票
+    hasVoted(voteId) {
+        return !!this.getVotedVotes()[voteId];
+    }
+};
+
 // 用户状态管理
 const UserStore = {
     data: null,

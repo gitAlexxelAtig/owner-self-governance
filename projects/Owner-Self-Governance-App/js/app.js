@@ -2,6 +2,11 @@
 
 // 初始化用户数据
 UserStore.init();
+// 初始化交互数据存储
+InteractionStore.init && InteractionStore.init();
+
+// 当前帖子ID（用于评论功能）
+let currentPostId = null;
 
 // 路由配置
 const routes = {
@@ -79,6 +84,23 @@ function showToast(message) {
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// 显示加载动画
+function showLoading(text = '加载中...') {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.querySelector('.loading-text').textContent = text;
+        loading.style.display = 'flex';
+    }
+}
+
+// 隐藏加载动画
+function hideLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'none';
+    }
 }
 
 // 渲染页面
