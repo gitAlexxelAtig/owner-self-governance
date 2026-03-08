@@ -1532,7 +1532,7 @@ const pages = {
                             <div style="margin: 8px 0; font-size: 14px; line-height: 1.6; color: #323233;">${comment.content}</div>
                             <div style="display: flex; gap: 16px; font-size: 13px; color: #969799;">
                                 <span onclick="toggleCommentLike(${comment.id})" style="cursor: pointer; ${isCommentLiked ? 'color: #ee0a24;' : ''}">👍 ${comment.likeCount + (isCommentLiked ? 1 : 0)}</span>
-                                ${!isReply ? `<span onclick="showToast('回复功能开发中')" style="cursor: pointer;">💬 回复</span>` : ''}
+                                ${!isReply ? `<span onclick="replyToComment(${comment.id}, '${comment.authorName}')" style="cursor: pointer;">💬 回复</span>` : ''}
                             </div>
                             ${!isReply && comment.replies && comment.replies.length > 0 ? `
                                 <div style="margin-top: 8px; background: #f7f8fa; border-radius: 8px; padding: 8px 12px;">
@@ -3383,3 +3383,58 @@ function callOwner(phone) {
 window.showChangePhoneModal = showChangePhoneModal;
 window.showBindWechatModal = showBindWechatModal;
 window.callOwner = callOwner;
+
+// ========== 评论回复功能 ==========
+
+/**
+ * 回复评论
+ */
+function replyToComment(commentId, authorName) {
+    const content = prompt(`回复 ${authorName}：`);
+    if (!content || !content.trim()) return;
+    
+    if (!currentPostId) {
+        showToast('帖子信息错误');
+        return;
+    }
+    
+    // 查找当前帖子
+    const post = MockData.posts.find(p => p.id === currentPostId);
+    if (!post || !post.comments) {
+        showToast('帖子不存在');
+        return;
+    }
+    
+    // 查找要回复的评论
+    const parentComment = post.comments.find(c => c.id === commentId);
+    if (!parentComment) {
+        showToast('评论不存在');
+        return;
+    }
+    
+    // 创建回复
+    const now = new Date();
+    const reply = {
+        id: Date.now(),
+        authorName: UserStore.data.nickname || '热心业主',
+        content: `@${authorName} ${content.trim()}`,
+        createdAt: now.toISOString().split('T')[0] + ' ' + now.toTimeString().slice(0, 5),
+        likeCount: 0,
+        replies: []
+    };
+    
+    // 添加到回复数组
+    if (!parentComment.replies) {
+        parentComment.replies = [];
+    }
+    parentComment.replies.push(reply);
+    
+    // 显示成功提示
+    showToast('回复成功');
+    
+    // 重新渲染页面
+    render();
+}
+
+// 暴露新的全局函数
+window.replyToComment = replyToComment;
