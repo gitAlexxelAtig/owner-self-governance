@@ -638,7 +638,7 @@ const pages = {
                     <div class="card">
                         <h3 class="card-title">常用法条</h3>
                         ${MockData.laws.map(l => `
-                            <div class="list-item" onclick="showToast('查看详情')">
+                            <div class="list-item" onclick="navigate('/law/detail/${l.id}')">
                                 <div class="list-item-content">
                                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                                         <span class="tag tag-primary">${l.category}</span>
