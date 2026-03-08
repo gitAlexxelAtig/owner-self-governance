@@ -538,7 +538,7 @@ const pages = {
 
                 <div class="content">
                     <!-- 搜索栏 -->
-                    <div class="card" style="padding: 12px;" onclick="navigate('/search')">
+                    <div class="card" style="padding: 12px; cursor: pointer;" onclick="navigate('/search')">
                         <div style="display: flex; align-items: center; gap: 8px; background: #f5f5f5; border-radius: 8px; padding: 10px 12px;">
                             <span style="color: #969799;">🔍</span>
                             <span style="color: #969799; font-size: 14px;">搜索法律、表决、帖子...</span>
@@ -1331,10 +1331,14 @@ const pages = {
     // 论坛帖子详情
     forumDetail(hash) {
         const id = parseInt(hash.split('/').pop());
+        currentPostId = id; // 保存当前帖子ID
         const post = MockData.posts.find(p => p.id === id);
         if (!post) {
             return `<div class="page active"><div class="content"><div class="card">帖子不存在</div></div></div>`;
         }
+
+        // 检查帖子是否已点赞
+        const isPostLiked = InteractionStore.isPostLiked(id);
 
         // 获取类型标签
         const typeLabels = { discussion: '讨论', notice: '通知', knowledge: '知识', complaint: '投诉' };
@@ -1342,6 +1346,7 @@ const pages = {
 
         // 渲染评论
         function renderComment(comment, isReply = false) {
+            const isCommentLiked = InteractionStore.isCommentLiked(comment.id);
             return `
                 <div class="${isReply ? 'reply-item' : 'comment-item'}" style="padding: 12px 0; ${!isReply ? 'border-bottom: 1px solid #ebedf0;' : 'padding-left: 44px; margin-top: 8px;'}"
                     <div style="display: flex; gap: 12px;">
@@ -1355,7 +1360,7 @@ const pages = {
                             </div>
                             <div style="margin: 8px 0; font-size: 14px; line-height: 1.6; color: #323233;">${comment.content}</div>
                             <div style="display: flex; gap: 16px; font-size: 13px; color: #969799;">
-                                <span onclick="showToast('点赞成功')" style="cursor: pointer;">👍 ${comment.likeCount}</span>
+                                <span onclick="toggleCommentLike(${comment.id})" style="cursor: pointer; ${isCommentLiked ? 'color: #ee0a24;' : ''}">👍 ${comment.likeCount + (isCommentLiked ? 1 : 0)}</span>
                                 ${!isReply ? `<span onclick="showToast('回复功能开发中')" style="cursor: pointer;">💬 回复</span>` : ''}
                             </div>
                             ${!isReply && comment.replies && comment.replies.length > 0 ? `
@@ -1416,9 +1421,9 @@ const pages = {
                                 <div style="font-size: 20px; margin-bottom: 4px;">👁️</div>
                                 ${post.viewCount}
                             </div>
-                            <div style="text-align: center; color: #969799; font-size: 13px; cursor: pointer;" onclick="showToast('点赞成功')">
+                            <div style="text-align: center; ${isPostLiked ? 'color: #ee0a24;' : 'color: #969799;'} font-size: 13px; cursor: pointer;" onclick="togglePostLike(${post.id})">
                                 <div style="font-size: 20px; margin-bottom: 4px;">👍</div>
-                                ${post.likeCount}
+                                ${post.likeCount + (isPostLiked ? 1 : 0)}
                             </div>
                             <div style="text-align: center; color: #969799; font-size: 13px; cursor: pointer;" onclick="showToast('分享成功')">
                                 <div style="font-size: 20px; margin-bottom: 4px;">📤</div>
@@ -1464,7 +1469,7 @@ const pages = {
                 <!-- 评论输入框（固定在底部） -->
                 <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #ebedf0; padding: 12px 16px; display: flex; gap: 12px; align-items: center; z-index: 100;">
                     <input type="text" placeholder="写评论..." style="flex: 1; height: 40px; border: 1px solid #ebedf0; border-radius: 20px; padding: 0 16px; font-size: 14px; outline: none;" id="commentInput">
-                    <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="showToast('评论功能开发中')">发送</button>
+                    <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="submitComment()">发送</button>
                 </div>
             </div>
         `;
@@ -1478,11 +1483,27 @@ const pages = {
             return `<div class="page active"><div class="content"><div class="card">表决不存在</div></div></div>`;
         }
 
+        // 检查用户是否已投票
+        const votedOption = InteractionStore.getVoteOption(id);
+        const hasVoted = !!votedOption;
+
         const supportPercent = Math.round(vote.support / vote.participated * 100) || 0;
         const opposePercent = Math.round(vote.oppose / vote.participated * 100) || 0;
         const abstainPercent = Math.round(vote.abstain / vote.participated * 100) || 0;
         const participationRate = Math.round(vote.participated / 280 * 100);
         const daysLeft = Math.ceil((new Date(vote.endTime) - new Date()) / (1000 * 60 * 60 * 24));
+
+        // 投票选项显示文本
+        const optionLabels = {
+            'support': '支持',
+            'oppose': '反对',
+            'abstain': '弃权'
+        };
+        const optionColors = {
+            'support': '#07c160',
+            'oppose': '#ee0a24',
+            'abstain': '#ff976a'
+        };
 
         return `
             <div class="page active">
@@ -1565,18 +1586,30 @@ const pages = {
                     ${vote.status === 'ongoing' ? `
                         <div class="card">
                             <div style="text-align: center; padding: 16px;">
-                                <div style="font-size: 14px; color: #969799; margin-bottom: 16px;">剩余 ${daysLeft > 0 ? daysLeft : 0} 天</div>
-                                <div style="display: flex; gap: 12px;">
-                                    <button class="btn btn-primary" style="flex: 1; background: #07c160;" onclick="showToast('投票成功：支持')">支持</button>
-                                    <button class="btn btn-default" style="flex: 1;" onclick="showToast('投票成功：反对')">反对</button>
-                                    <button class="btn btn-default" style="flex: 1;" onclick="showToast('投票成功：弃权')">弃权</button>
-                                </div>
+                                ${hasVoted ? `
+                                    <div style="margin-bottom: 16px;">
+                                        <div style="font-size: 14px; color: #969799; margin-bottom: 8px;">您已投票</div>
+                                        <div style="font-size: 24px; font-weight: 600; color: ${optionColors[votedOption]};">
+                                            ${optionLabels[votedOption]}
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-default" style="width: 100%;" onclick="showVoteOptions(${vote.id})">修改投票</button>
+                                ` : `
+                                    <div style="font-size: 14px; color: #969799; margin-bottom: 16px;">剩余 ${daysLeft > 0 ? daysLeft : 0} 天</div>
+                                    <div id="voteOptions">
+                                        <div style="display: flex; gap: 12px;">
+                                            <button class="btn btn-primary" style="flex: 1; background: #07c160;" onclick="submitVoteOption(${vote.id}, 'support')">支持</button>
+                                            <button class="btn btn-default" style="flex: 1;" onclick="submitVoteOption(${vote.id}, 'oppose')">反对</button>
+                                            <button class="btn btn-default" style="flex: 1;" onclick="submitVoteOption(${vote.id}, 'abstain')">弃权</button>
+                                        </div>
+                                    </div>
+                                `}
                             </div>
                         </div>
                     ` : `
                         <div class="card">
                             <div style="text-align: center; padding: 16px; color: #969799;">
-                                该表决已结束
+                                ${hasVoted ? `您已投：${optionLabels[votedOption]}` : '该表决已结束'}
                             </div>
                         </div>
                     `}
@@ -1762,12 +1795,14 @@ const pages = {
                     <!-- 图片上传 -->
                     <div class="card">
                         <h3 class="card-title">添加图片（最多9张）</h3>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="postImagesContainer">
-                            <div style="aspect-ratio: 1; border: 2px dashed #ddd; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #969799; cursor: pointer;" onclick="showToast('图片上传功能开发中')">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="imagePreviewContainer">
+                            <label style="aspect-ratio: 1; border: 2px dashed #ddd; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #969799; cursor: pointer;">
                                 <div style="font-size: 24px; margin-bottom: 4px;">📷</div>
                                 <div style="font-size: 12px;">添加</div>
-                            </div>
+                                <input type="file" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(this)">
+                            </label>
                         </div>
+                        <div style="font-size: 12px; color: #969799; margin-top: 8px;">点击添加图片，支持预览和删除</div>
                     </div>
 
                     <!-- 其他设置 -->
@@ -2552,6 +2587,89 @@ function bindEvents() {
             navigate(path);
         });
     });
+    
+    // 下拉刷新（仅在列表页启用）
+    initPullRefresh();
+}
+
+// 下拉刷新初始化
+function initPullRefresh() {
+    const content = document.querySelector('.content');
+    if (!content) return;
+    
+    let startY = 0;
+    let currentY = 0;
+    let isPulling = false;
+    const threshold = 80; // 触发刷新的阈值
+    
+    content.addEventListener('touchstart', (e) => {
+        if (content.scrollTop === 0) {
+            startY = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+    
+    content.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+        
+        if (diff > 0 && diff < threshold * 1.5) {
+            content.style.transform = `translateY(${diff * 0.5}px)`;
+        }
+    }, { passive: true });
+    
+    content.addEventListener('touchend', () => {
+        if (!isPulling) return;
+        const diff = currentY - startY;
+        
+        content.style.transform = '';
+        content.style.transition = 'transform 0.3s';
+        
+        if (diff > threshold) {
+            showToast('刷新中...');
+            setTimeout(() => {
+                showToast('刷新成功');
+                render();
+            }, 1000);
+        }
+        
+        setTimeout(() => {
+            content.style.transition = '';
+        }, 300);
+        
+        isPulling = false;
+        startY = 0;
+        currentY = 0;
+    });
+}
+
+// 图片上传预览
+function handleImageUpload(input) {
+    const files = input.files;
+    if (!files || files.length === 0) return;
+    
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+    
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imgDiv = document.createElement('div');
+            imgDiv.style.cssText = 'position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden;';
+            imgDiv.innerHTML = `
+                <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
+                <button onclick="this.parentElement.remove()" style="position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; font-size: 16px; cursor: pointer;">×</button>
+            `;
+            container.appendChild(imgDiv);
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    // 清空input以便可以再次选择同一文件
+    input.value = '';
 }
 
 // 消息通知相关函数
@@ -2836,6 +2954,8 @@ window.addEventListener('DOMContentLoaded', () => {
 // 暴露全局函数
 window.navigate = navigate;
 window.showToast = showToast;
+window.showLoading = showLoading;
+window.hideLoading = hideLoading;
 window.handleLogin = handleLogin;
 window.handleLogout = handleLogout;
 window.selectCommunity = selectCommunity;
@@ -2861,6 +2981,9 @@ window.handleSearch = handleSearch;
 window.doSearch = doSearch;
 window.clearSearch = clearSearch;
 window.clearSearchHistory = clearSearchHistory;
+window.handleImageUpload = handleImageUpload;
+window.clearSearch = clearSearch;
+window.clearSearchHistory = clearSearchHistory;
 
 // 账号安全页面全局函数
 window.showEditNicknameModal = showEditNicknameModal;
@@ -2872,3 +2995,164 @@ window.savePassword = savePassword;
 window.showClearCacheModal = showClearCacheModal;
 window.showLogoutModal = showLogoutModal;
 window.showDeleteAccountModal = showDeleteAccountModal;
+
+// ========== 核心交互功能函数 ==========
+
+/**
+ * 提交评论
+ */
+function submitComment() {
+    const input = document.getElementById('commentInput');
+    const content = input?.value.trim();
+    
+    if (!content) {
+        showToast('请输入评论内容');
+        return;
+    }
+    
+    if (content.length < 2) {
+        showToast('评论至少2个字');
+        return;
+    }
+    
+    if (!currentPostId) {
+        showToast('帖子信息错误');
+        return;
+    }
+    
+    // 查找当前帖子
+    const post = MockData.posts.find(p => p.id === currentPostId);
+    if (!post) {
+        showToast('帖子不存在');
+        return;
+    }
+    
+    // 创建新评论
+    const now = new Date();
+    const newComment = {
+        id: Date.now(), // 使用时间戳作为唯一ID
+        authorName: UserStore.data.nickname || '热心业主',
+        content: content,
+        createdAt: now.toISOString().split('T')[0] + ' ' + now.toTimeString().slice(0, 5),
+        likeCount: 0,
+        replies: []
+    };
+    
+    // 添加到帖子的评论数组
+    if (!post.comments) {
+        post.comments = [];
+    }
+    post.comments.push(newComment);
+    
+    // 更新帖子评论数
+    post.commentCount = post.comments.length;
+    
+    // 清空输入框
+    input.value = '';
+    
+    // 显示成功提示
+    showToast('评论发表成功');
+    
+    // 重新渲染页面显示新评论
+    render();
+}
+
+/**
+ * 切换帖子点赞状态
+ */
+function togglePostLike(postId) {
+    const post = MockData.posts.find(p => p.id === postId);
+    if (!post) {
+        showToast('帖子不存在');
+        return;
+    }
+    
+    // 切换点赞状态
+    const isLiked = InteractionStore.togglePostLike(postId);
+    
+    // 显示提示
+    showToast(isLiked ? '点赞成功' : '已取消点赞');
+    
+    // 重新渲染页面
+    render();
+}
+
+/**
+ * 切换评论点赞状态
+ */
+function toggleCommentLike(commentId) {
+    // 切换点赞状态
+    const isLiked = InteractionStore.toggleCommentLike(commentId);
+    
+    // 显示提示
+    showToast(isLiked ? '点赞成功' : '已取消点赞');
+    
+    // 重新渲染页面
+    render();
+}
+
+/**
+ * 提交投票选项
+ */
+function submitVoteOption(voteId, option) {
+    const vote = MockData.votes.find(v => v.id === voteId);
+    if (!vote) {
+        showToast('表决不存在');
+        return;
+    }
+    
+    // 获取之前的投票选项
+    const prevOption = InteractionStore.getVoteOption(voteId);
+    
+    // 如果之前投过票，先减去之前的票数
+    if (prevOption) {
+        if (prevOption === 'support') vote.support--;
+        else if (prevOption === 'oppose') vote.oppose--;
+        else if (prevOption === 'abstain') vote.abstain--;
+        vote.participated--;
+    }
+    
+    // 添加新的票数
+    if (option === 'support') vote.support++;
+    else if (option === 'oppose') vote.oppose++;
+    else if (option === 'abstain') vote.abstain++;
+    vote.participated++;
+    
+    // 保存投票记录
+    InteractionStore.submitVote(voteId, option);
+    
+    // 显示提示
+    const optionLabels = { 'support': '支持', 'oppose': '反对', 'abstain': '弃权' };
+    showToast(`投票成功：${optionLabels[option]}`);
+    
+    // 重新渲染页面
+    render();
+}
+
+/**
+ * 显示投票选项（用于修改投票）
+ */
+function showVoteOptions(voteId) {
+    const voteOptionsDiv = document.getElementById('voteOptions');
+    if (!voteOptionsDiv) {
+        // 如果不存在投票选项容器，重新渲染页面
+        render();
+        return;
+    }
+    
+    // 替换为投票选项按钮
+    voteOptionsDiv.innerHTML = `
+        <div style="display: flex; gap: 12px;">
+            <button class="btn btn-primary" style="flex: 1; background: #07c160;" onclick="submitVoteOption(${voteId}, 'support')">支持</button>
+            <button class="btn btn-default" style="flex: 1;" onclick="submitVoteOption(${voteId}, 'oppose')">反对</button>
+            <button class="btn btn-default" style="flex: 1;" onclick="submitVoteOption(${voteId}, 'abstain')">弃权</button>
+        </div>
+    `;
+}
+
+// 暴露新的全局函数
+window.submitComment = submitComment;
+window.togglePostLike = togglePostLike;
+window.toggleCommentLike = toggleCommentLike;
+window.submitVoteOption = submitVoteOption;
+window.showVoteOptions = showVoteOptions;
