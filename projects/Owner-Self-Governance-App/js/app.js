@@ -793,6 +793,174 @@ const pages = {
                 </div>
             </div>
         `;
+    },
+    
+    // 法律详情
+    lawDetail(hash) {
+        const id = parseInt(hash.split('/').pop());
+        const law = MockData.laws.find(l => l.id === id);
+        if (!law) {
+            return `<div class="page active"><div class="content"><div class="card">法条不存在</div></div></div>`;
+        }
+        
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>法律详情</h1>
+                        <span></span>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <span class="tag tag-primary">${law.category}</span>
+                            <span class="text-small text-gray">${law.article}</span>
+                        </div>
+                        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">${law.title}</h2>
+                        <div style="font-size: 14px; color: #646566; margin-bottom: 8px;">${law.chapter}</div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">法条内容</h3>
+                        <div style="font-size: 15px; line-height: 1.8; color: #323233;">${law.content}</div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">适用场景</h3>
+                        ${law.scenarios.map(sid => {
+                            const scenario = MockData.scenarios.find(s => s.id === sid);
+                            return scenario ? `
+                                <div class="list-item" style="padding-left: 0; padding-right: 0; cursor: pointer;" onclick="showToast('场景详情')">
+                                    <div class="list-item-content">
+                                        <div class="list-item-title">${scenario.title}</div>
+                                        <div class="list-item-desc">${scenario.description}</div>
+                                    </div>
+                                    <div class="list-item-arrow">›</div>
+                                </div>
+                            ` : '';
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+    
+    // 表决详情
+    voteDetail(hash) {
+        const id = parseInt(hash.split('/').pop());
+        const vote = MockData.votes.find(v => v.id === id);
+        if (!vote) {
+            return `<div class="page active"><div class="content"><div class="card">表决不存在</div></div></div>`;
+        }
+        
+        const supportPercent = Math.round(vote.support / vote.participated * 100) || 0;
+        const opposePercent = Math.round(vote.oppose / vote.participated * 100) || 0;
+        const abstainPercent = Math.round(vote.abstain / vote.participated * 100) || 0;
+        const participationRate = Math.round(vote.participated / 280 * 100);
+        const daysLeft = Math.ceil((new Date(vote.endTime) - new Date()) / (1000 * 60 * 60 * 24));
+        
+        return `
+            <div class="page active">
+                <div class="header">
+                    <div class="header-content">
+                        <a href="javascript:history.back()" class="back-btn">‹</a>
+                        <h1>表决详情</h1>
+                        <span></span>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="card">
+                        <div class="vote-header">
+                            <span class="tag ${vote.status === 'ongoing' ? 'tag-primary' : 'tag-default'}">${vote.status === 'ongoing' ? '进行中' : '已结束'}</span>
+                            <span class="text-small text-gray">${vote.type}</span>
+                        </div>
+                        <h2 style="font-size: 18px; font-weight: 600; margin: 12px 0;">${vote.title}</h2>
+                        <div style="font-size: 14px; color: #646566; line-height: 1.6;">${vote.content}</div>
+                        <div style="margin-top: 12px; font-size: 12px; color: #969799;">
+                            表决时间：${vote.startTime} 至 ${vote.endTime}
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">参与情况</h3>
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>参与率</span>
+                                <span>${participationRate}% (${vote.participated}/280户)</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${participationRate}%"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-around; text-align: center; padding-top: 12px; border-top: 1px solid #ebedf0;">
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #07c160;">${vote.support}</div>
+                                <div style="font-size: 12px; color: #969799;">支持</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #ee0a24;">${vote.oppose}</div>
+                                <div style="font-size: 12px; color: #969799;">反对</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: 600; color: #ff976a;">${vote.abstain}</div>
+                                <div style="font-size: 12px; color: #969799;">弃权</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">投票分布</h3>
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #07c160;">支持 ${supportPercent}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${supportPercent}%; background: linear-gradient(90deg, #07c160, #07c160);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #ee0a24;">反对 ${opposePercent}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${opposePercent}%; background: linear-gradient(90deg, #ee0a24, #ee0a24);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #ff976a;">弃权 ${abstainPercent}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${abstainPercent}%; background: linear-gradient(90deg, #ff976a, #ff976a);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${vote.status === 'ongoing' ? `
+                        <div class="card">
+                            <div style="text-align: center; padding: 16px;">
+                                <div style="font-size: 14px; color: #969799; margin-bottom: 16px;">剩余 ${daysLeft > 0 ? daysLeft : 0} 天</div>
+                                <div style="display: flex; gap: 12px;">
+                                    <button class="btn btn-primary" style="flex: 1; background: #07c160;" onclick="showToast('投票成功：支持')">支持</button>
+                                    <button class="btn btn-default" style="flex: 1;" onclick="showToast('投票成功：反对')">反对</button>
+                                    <button class="btn btn-default" style="flex: 1;" onclick="showToast('投票成功：弃权')">弃权</button>
+                                </div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="card">
+                            <div style="text-align: center; padding: 16px; color: #969799;">
+                                该表决已结束
+                            </div>
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
     }
 };
 
